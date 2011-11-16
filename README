@@ -16,3 +16,9 @@ author      : addyosmani (Addy Osmani)
 url         : https://github.com/addyosmani/memoize.js
 description : performant memoisation script as discussed in this blogpost:
               http://addyosmani.com/blog/faster-javascript-memoization/
+			  
+library     : qunit
+author      : jQuery
+url			: http://docs.jquery.com/QUnit
+description : unit testing framework based on jQuery. I've neglected to include the qUnit framework here
+              but will include a fully configured test suite in later commits

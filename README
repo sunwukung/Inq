@@ -2,4 +2,17 @@ This project is a work in progress, primarily as a focus
 to learn mathematics and javascript.
 
 The underlying concept is to provide a library that is to 
-canvas as modular synthesizers are to sound
+canvas as modular synthesizers are to music.
+
+This project has a dependency on the following components:
+
+library     : q.js
+author      : rudenoise (Joel Hughes) 
+url         : https://github.com/rudenoise/Q.JS
+description : excellent type validation library component by Joel Hughes
+
+library     : memoize.js
+author      : addyosmani (Addy Osmani)
+url         : https://github.com/addyosmani/memoize.js
+description : performant memoisation script as discussed in this blogpost:
+              http://addyosmani.com/blog/faster-javascript-memoization/

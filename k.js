@@ -86,20 +86,24 @@ var k = ( function(module) {
     * Released under an MIT license.
     */
     function memo( fn ) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments),
-                hash = "",
-                i = args.length;
-            currentArg = null;
-            while (i--) {
-                currentArg = args[i];
-                hash += (currentArg === Object(currentArg)) ?
-                JSON.stringify(currentArg) : currentArg;
-                fn.memoize || (fn.memoize = {});
-            }
-            return (hash in fn.memoize) ? fn.memoize[hash] :
-                fn.memoize[hash] = fn.apply(this, args);
-        };
+        var result = false;
+        if(q.isF(fn)){
+            result = function () {
+                var args = Array.prototype.slice.call(arguments),
+                    hash = "",
+                    i = args.length;
+                currentArg = null;
+                while (i--) {
+                    currentArg = args[i];
+                    hash += (currentArg === Object(currentArg)) ?
+                    JSON.stringify(currentArg) : currentArg;
+                    fn.memoize || (fn.memoize = {});
+                }
+                return (hash in fn.memoize) ? fn.memoize[hash] :
+                    fn.memoize[hash] = fn.apply(this, args);
+            };
+        }
+        return result;
     }
     
     module.clone = clone;

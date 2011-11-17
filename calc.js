@@ -1,27 +1,27 @@
 /**
- *  @package geom
- *  geom.js
+ *  @package calc
+ *  calc.js
  *
  *  This file is part of the 'inq' javascript library.
  *
- *  geom.js is free software: you can redistribute it and/or modify
+ *  calc.js is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  geom.js is distributed in the hope that it will be useful,
+ *  calc.js is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with geom.js.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with calc.js.  If not, see <http://www.gnu.org/licenses/>.
  *
  *  @author Marcus Kielly
  *  @version 1.0
  *  @projectDescription this script provides the geometric calculations/transformations of the inq canvas library
  */
-var geom = ( function(module) {
+var calc = ( function(module) {
     
     /*
     * converts degrees to radians
@@ -180,4 +180,4 @@ var geom = ( function(module) {
     module.cartesianToPolar = cartesianToPolar;
     return module;
     
-}(geom || {}));
+}(calc || {}));

@@ -1,26 +1,26 @@
 /**
- *  @package form
- *  form.js
- *
- *  This file is part of the 'inq' javascript library.
- *
- *  form.js is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  form.js is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with form.js.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  @author Marcus Kielly
- *  @version 1.0
- *  @projectDescription this script provides the base primitive drawing capabilities of the inq canvas library
- */
+*  @package form
+*  form.js
+*
+*  This file is part of the 'inq' javascript library.
+*
+*  form.js is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  form.js is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with form.js.  If not, see <http://www.gnu.org/licenses/>.
+*
+*  @author Marcus Kielly
+*  @version 1.0
+*  @projectDescription this script provides the base primitive drawing capabilities of the inq canvas library
+*/
 var form = ( function(module) {
 
     var form,rectangle,circle,curve,line;
@@ -30,7 +30,6 @@ var form = ( function(module) {
     */
     form = function(){
         this.transforms = [];
-        this.xy = [0,0];
     };
     
     form.prototype.rotate = function(d){
@@ -60,7 +59,8 @@ var form = ( function(module) {
         return result;
     };
     
-    
+//-----------------------------------------------------------------------------------
+
     /*
     * RECTANGLE
     * 
@@ -82,7 +82,9 @@ var form = ( function(module) {
     k.inherit(rectangle,form);
     
     rectangle.prototype.draw = function(canvas, position, ink){
-        var result = false, points, mRectangleToPoints;
+        var result = false, 
+            points, 
+            mRectangleToPoints;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
             mRectangleToPoints = k.memo(rectangleToPoints);
@@ -92,16 +94,6 @@ var form = ( function(module) {
             result = true;
         }
         return result;
-    };
-    
-    function processTransforms(points,transforms){
-        var i = 0, n = transforms.length, newPoints = [];
-        while(i < n){
-            //execute the transformation
-            newPoints = geom[transforms[i]['type']](points,transforms[i]['value']);
-            i+=1;
-        }
-        return newPoints;
     };
     
     /*
@@ -119,20 +111,46 @@ var form = ( function(module) {
         return result;
     };
     
+//-----------------------------------------------------------------------------------
+
+    /*
+    * CIRCLE
+    * 
+    * constructor method for rectangles
+    * private implementation of form.rec i
+    * 
+    * @arg Number radius
+    */
+    circle = function(radius){
+        form.apply(this,arguments);
+        this.radius = radius;
+        //reinstate for optimised rendering
+        //this.startAngle = 0;
+        //this.startPos = [0, 0];
+        //this.endAngle = calc.degreesToRadians(360);
+        
+        //this.points = _crcToCurve(this); 
+    };
+    
+    // apply parent prototype before augmenting the child object
+    k.inherit(circle,form);
+    
     /*
     * returns a circle object
     *
     * @arg Number r radius
     * @return Object | Boolean
     */
-    function crc(r){
-        var c = false;
-        if(q.isN(r)){
-            c = {};
-            c.radius = r;     
+    function crc(radius){
+        var result = false;
+        if(q.isN(radius)){
+    
+            result = new circle(radius);
         }
-        return c;
+        return result;
     };
+    
+//-----------------------------------------------------------------------------------
     
     /*
     * returns a line object
@@ -147,6 +165,8 @@ var form = ( function(module) {
         }
         return l;
     };
+    
+//-----------------------------------------------------------------------------------
     
     /*
     * returns a curve object
@@ -179,6 +199,28 @@ var form = ( function(module) {
     	e = [-hW, -hY];
     	return [a, b, c, d, e];
     };
+    
+    /**
+     * create a quadratic curve representing a circle
+     *
+     * @param Number r radius
+     */
+    var circleToCurve = function(r) {        
+    	var a, b, c, d,
+            x = 0, 
+            y = 0,
+            o = r / 1.85,//offset
+            result = false; 
+        if(q.isN(r)){            
+    	    //offset
+    	    a = [x + o, -r, x + r, y - o, x + r, y];
+    	    b = [x + r, y + o, x + o, y + r, x, y + r];
+    	    c = [x - o, y + r, x - r, y + o, x - r, y];
+    	    d = [x - r, -o, x - o, -r, x, -r];
+            result = [a,b,c,d];
+        }
+        return result;
+    }
     
     /* transforms a set of co-ordinates to a new position
      * 
@@ -229,6 +271,22 @@ var form = ( function(module) {
             }
         return result;
     };
+    
+    function processTransforms(points,transforms){
+    var i = 0, 
+        n = transforms.length, 
+        newPoints = [];
+    if(n > 0){
+        while(i < n){
+            //execute the transformation
+            newPoints = calc[transforms[i]['type']](points,transforms[i]['value']);
+            i+=1;
+        }
+    }else{
+        newPoints = points;
+    }
+    return newPoints;
+};
     
  
     

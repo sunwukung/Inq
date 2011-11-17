@@ -58,15 +58,10 @@ test('proto',function(){
 
 test('memo',function(){
     ok(q.isF(k.memo),'the k namespace contains a method called memo');
-    ok((k.memo(this.str,this.fn) === false && 
-        k.memo(this.num,this.fn) === false &&
-        k.memo(this.obj,this.fn) === false &&
-        k.memo(this.boo,this.fn) === false &&
-        k.memo(this.fn,this.fn) === false &&
-        k.memo(this.arr,this.str) === false && 
-        k.memo(this.arr,this.num) === false &&
-        k.memo(this.arr,this.obj) === false &&
-        k.memo(this.arr,this.arr) === false &&
-        k.memo(this.arr,this.bool) === false),'clone returns false if first argument is not an array and the second argument is not a function');
-    ok(q.isF(k.memo(this.arr,this.fn)) === true,'memo returns a new function if provided an arguments array and a callback function');
+    ok((k.memo(this.str) === false && 
+        k.memo(this.num) === false &&
+        k.memo(this.obj) === false &&
+        k.memo(this.arr) === false &&
+        k.memo(this.bool) === false),'memo returns false if first argument is not an array and the second argument is not a function');
+    ok(q.isF(k.memo(this.fn)) === true,'memo returns a new function if provided an arguments array and a callback function');
 });

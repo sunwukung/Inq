@@ -4,8 +4,12 @@ module('form',{
         this.rectangles = {
             a : form.rec(10,10),
             b : form.rec(20,20)            
-            }
         },
+        this.circles = {
+            a : form.crc(10),
+            b : form.rec(20)
+        }
+    },
     teardown : function(){
         this.canvas = document.createElement('canvas').getContext('2d');
         this.rectangles = {
@@ -74,32 +78,29 @@ test('rec.scale',function(){
     r.a.scale(10,10);
     ok(r.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
     r.a.scale(20,20);
-    console.log(r.a);
     ok((r.a.transforms[0]['type']  === 'scale' && q.isA(r.a.transforms[0]['value']) && r.a.transforms[0]['value'][0] === 10 &&
        r.a.transforms[1]['type']  === 'scale' && q.isA(r.a.transforms[1]['value']) && r.a.transforms[1]['value'][0] === 20
     ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array'); 
 });
 
-test('rec.origin',function(){
-    var r = this.rectangles;  
-    ok(q.isF(r.a.origin),'objects created by form.rec have a method: origin');
-        ok((r.a.origin(this.str) === false &&
-        r.a.origin(this.num) === false &&
-        r.a.origin(this.obj) === false &&
-        r.a.origin(this.bool) === false &&
-        r.a.origin(this.fn) === false &&
-        r.a.origin(10,10) === true),'origin returns false unless passed two Number arguments'); 
-});
-
 
 test('crc',function(){
+    var c = this.circles;   
     ok(typeof form.crc === 'function','form.crc is a function');
     ok((form.crc(this.str) === false &&
         form.crc(this.arr) === false &&
         form.crc(this.obj) === false &&
         form.crc(this.bool) === false &&
         form.crc(this.fn) === false),
-        'form.crc returns false on bad arguments');
+        'form.crc returns false if not provided a numeric argument');
+    ok(q.isO(form.crc(10)),'form.crc returns a circle object if provided with a numeric argument');
+    c.a.transforms = [];
+    c.a.scale(10,10);
+    ok(c.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
+        c.a.scale(20,20);
+    ok((c.a.transforms[0]['type']  === 'scale' && q.isA(c.a.transforms[0]['value']) && c.a.transforms[0]['value'][0] === 10 &&
+        c.a.transforms[1]['type']  === 'scale' && q.isA(c.a.transforms[1]['value']) && c.a.transforms[1]['value'][0] === 20
+    ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array'); 
 });
 
 test('lin',function(){

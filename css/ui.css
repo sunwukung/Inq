@@ -1,0 +1,116 @@
+/*
+ Document   : base
+ Created on : 27-Oct-2010, 20:40:17
+ Author     : marcus kielly | marcus@marcusk.co.uk
+ Description: baseline css
+*/
+
+
+/* LAYOUT */
+/* -------------------------------------------------------------------------- */
+#header, #content, #footer, #nav, #title {
+    margin-left: auto;
+    margin-right: auto;
+    width: 960px;
+}
+#header {
+    padding: 20px 40px;
+    width: 880px;
+    height: 60px;
+}
+#nav_slice {
+    height: 30px;
+}
+#nav {
+    height: 20px;
+    padding: 5px 0px;
+}
+
+
+#title_slice{
+    height: 70px;
+}
+
+#content{
+    padding-bottom: 50px;
+}
+
+/* NAVIGATION */
+/* -------------------------------------------------------------------------- */
+#nav ul {
+    display: block;
+    height: 30px;
+    margin-left: 40px;
+}
+#nav ul li {
+    display: inline;
+}
+
+#nav ul li a{
+    height: 30px;
+    padding: 5px 20px 0px 0px;
+}
+
+#nav ul li a:hover{
+    text-decoration: underline;
+}
+
+/* COLUMNS */
+/* -------------------------------------------------------------------------- */
+.main{
+    width: 500px;
+}
+
+.sub{
+    width: 300px;
+}
+
+/* BACKGROUND COLOUR */
+/* -------------------------------------------------------------------------- */
+#header, #header_slice {
+    background-color: #2B81AF;
+}
+#nav, #nav_slice {
+    background-color: #323232;
+}
+
+
+#footer, #footer_slice, #title_slice {
+    background-color: #e7ffbf;
+}
+
+
+/* BORDERS */
+/* -------------------------------------------------------------------------- */
+fieldset.error input,fieldset.error textarea{
+    border : 1px solid #cd1c26;
+}
+input,textarea{
+    border: 1px solid #b8cc96;
+}
+
+/* BORDER STYLES */
+/* -------------------------------------------------------------------------- */
+
+/* CSS3 EFFECTS */
+/* -------------------------------------------------------------------------- */
+.txtshadow {
+    text-shadow: 1px 1px 2px #272e25;
+    filter: dropshadow(color=#272e25, offx=1, offy=1);
+}
+
+.shadow {
+    box-shadow: 3px 3px 5px #D1D5D6;
+    -webkit-box-shadow: 3px 3px 5px #D1D5D6;
+    -moz-box-shadow: 3px 3px 5px #D1D5D6;
+}
+
+.corner{
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+}
+
+/* FORM */
+/* -------------------------------------------------------------------------- */

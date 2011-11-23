@@ -1,0 +1,113 @@
+/*
+    Document   : base
+    Created on : 27-Oct-2010, 20:40:17
+    Author     : marcus kielly | marcus@marcusk.co.uk
+    Description: baseline css
+*/
+
+/* RESET */
+html,body,div,span,applet,object,iframe,
+h1,h2,h3,h4,h5,h6,
+p,blockquote,pre,a,
+abbr,acronym,address,big,cite,code,del,dfn,
+em,font,b,u,i,strong,
+img,ins,kbd,q,s,samp,small,strike,sub,sup,tt,var,center,
+dl,dd,dt,
+ol,ul,li,
+fieldset,form,label,legend,
+table,caption,tbody,tfoot,thead,tr,th,td{
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align:baseline;
+    border: 0;
+    outline: 0;
+    background:transparent;
+}
+
+ol,ul{
+    list-style: none;
+}
+
+blockquotes,q{
+    quotes:none;
+}
+:focus{
+    outline:0;
+}
+table{
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/*
+"Sticky Footer Solution" by Steve Hatcher
+http://www.cssstickyfooter.com
+
+must declare 0 margins on everything, also for main layout components use padding, not
+vertical margins (top and bottom) to add spacing, else those margins get added to total height
+and your footer gets pushed down a bit more, creating vertical scroll bars in the browser */
+
+html, body, #wrap {height: 100%;}
+
+body > #wrap {height: auto; min-height: 100%;}
+
+#main {padding-bottom: 100px;}  /* must be same height as the footer */
+
+/* CLEAR FIX*/
+.group:after
+{
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;}
+.group {display: inline-block;}
+/* Hides from IE-mac \*/
+* html .group { height: 1%;}
+.group {display: block;
+}
+/* End hide from IE-mac */
+
+#footer
+{
+    position: relative;
+    margin-top: -100px; /* negative value of footer height */
+    height: 100px;
+}
+
+/* COMMON */
+
+a{
+    text-decoration: none;
+}
+
+.lft{
+    float: left;
+}
+
+.rgt{
+    float: right;
+}
+
+.row{
+    clear: both;
+    width: 100%;
+}
+
+.btn,
+a:hover{
+    cursor: pointer;
+}
+
+div.inner
+{
+    padding: 20px 40px;
+}
+
+p{
+    padding-bottom: 20px;
+}
+
+
+

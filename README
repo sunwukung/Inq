@@ -22,3 +22,6 @@ author      : jQuery
 url         : http://docs.jquery.com/QUnit
 description : unit testing framework based on jQuery. I've neglected to include the qUnit framework here
               but will include a fully configured test suite in later commits
+
+The library is currently under development, and thus the project is set up as
+a standalone site.

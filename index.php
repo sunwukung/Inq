@@ -1,4 +1,7 @@
-<?php include 'partials/header.php'; ?>
+<?php 
+$css = $js = '';
+include 'partials/header.php'; 
+?>
 <canvas id="ezl" width="900" height="900"></canvas>
 <script>
 (function(){

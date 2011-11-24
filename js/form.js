@@ -35,7 +35,10 @@ var form = ( function(module) {
     form.prototype.rotate = function(d){
         var result = false;
         if(q.isN(d)){
-            this.transforms.push({type:'rotate',value:d});  
+            this.transforms.push({
+                type:'rotate',
+                value:d
+            });
             result = true;
         }
         return result;
@@ -44,7 +47,10 @@ var form = ( function(module) {
     form.prototype.scale = function(w,h){
         var result = false;
         if(q.isN(w) && q.isN(h)){
-            this.transforms.push({type:'scale',value:[w,h]});
+            this.transforms.push({
+                type:'scale',
+                value:[w,h]
+            });
             result = true;
         }
         return result;
@@ -59,7 +65,7 @@ var form = ( function(module) {
         return result;
     };
     
-//-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
 
     /*
     * RECTANGLE
@@ -80,11 +86,14 @@ var form = ( function(module) {
     
     // apply parent prototype before augmenting the child object
     k.inherit(rectangle,form);
-    
-    rectangle.prototype.draw = function(canvas, position, ink){
+
+    /*
+     *
+     */
+    rectangle.prototype.draw = function(canvas, position){
         var result = false, 
-            points, 
-            mRectangleToPoints;
+        points,
+        mRectangleToPoints;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
             mRectangleToPoints = k.memo(rectangleToPoints);
@@ -109,9 +118,9 @@ var form = ( function(module) {
             result = new rectangle(w,h);
         }        
         return result;
-    };
+    }
     
-//-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
 
     /*
     * CIRCLE
@@ -124,17 +133,38 @@ var form = ( function(module) {
     circle = function(radius){
         form.apply(this,arguments);
         this.radius = radius;
-        //reinstate for optimised rendering
-        //this.startAngle = 0;
-        //this.startPos = [0, 0];
-        //this.endAngle = calc.degreesToRadians(360);
+    //reinstate later for optimised rendering
+    //this.startAngle = 0;
+    //this.startPos = [0, 0];
+    //this.endAngle = calc.degreesToRadians(360);
         
-        //this.points = _crcToCurve(this); 
+    //this.points = _crcToCurve(this);
     };
     
     // apply parent prototype before augmenting the child object
     k.inherit(circle,form);
-    
+
+    /*
+     *
+     */
+    circle.prototype.draw = function(canvas, position){
+        var result = false,
+        points,
+        start,
+        mCircleToPoints;
+        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
+            //create a point matrix if one isn't already defined
+            mCircleToPoints = k.memo(circleToPoints);
+            points = processTransforms(mCircleToPoints(this.radius),this.transforms);
+            position = q.isA(position) ? position : [0,0];
+
+            points = applyPosition(position,points);
+            start =  [points[3][4],points[3][5]];
+            drawBezCurve(canvas, position, points, start);
+            result = true;
+        }
+        return result;
+    };
     /*
     * returns a circle object
     *
@@ -144,13 +174,12 @@ var form = ( function(module) {
     function crc(radius){
         var result = false;
         if(q.isN(radius)){
-    
             result = new circle(radius);
         }
         return result;
-    };
+    }
     
-//-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
     
     /*
     * returns a line object
@@ -164,9 +193,9 @@ var form = ( function(module) {
             l = {};
         }
         return l;
-    };
+    }
     
-//-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
     
     /*
     * returns a curve object
@@ -180,7 +209,7 @@ var form = ( function(module) {
             c = {};
         }
         return c;
-    };
+    }
     
     /*
      * converts rectangle object to XY list
@@ -193,49 +222,56 @@ var form = ( function(module) {
         hW = r.w / 2;
         hY = r.h / 2;
         a = [-hW, -hY];
-    	b = [hW, -hY];
-    	c = [hW, hY];
-    	d = [-hW, hY];
-    	e = [-hW, -hY];
-    	return [a, b, c, d, e];
-    };
+        b = [hW, -hY];
+        c = [hW, hY];
+        d = [-hW, hY];
+        e = [-hW, -hY];
+        return [a, b, c, d, e];
+    }
     
     /**
      * create a quadratic curve representing a circle
      *
      * @param Number r radius
      */
-    var circleToCurve = function(r) {        
-    	var a, b, c, d,
-            x = 0, 
-            y = 0,
-            o = r / 1.85,//offset
-            result = false; 
+    function circleToPoints(r) {
+        var a, b, c, d,
+        x = 0,
+        y = 0,
+        o = r / 1.85,//offset
+        result = false;
         if(q.isN(r)){            
-    	    //offset
-    	    a = [x + o, -r, x + r, y - o, x + r, y];
-    	    b = [x + r, y + o, x + o, y + r, x, y + r];
-    	    c = [x - o, y + r, x - r, y + o, x - r, y];
-    	    d = [x - r, -o, x - o, -r, x, -r];
+            //offset
+            a = [x + o, -r, x + r, y - o, x + r, y];
+            b = [x + r, y + o, x + o, y + r, x, y + r];
+            c = [x - o, y + r, x - r, y + o, x - r, y];
+            d = [x - r, -o, x - o, -r, x, -r];
             result = [a,b,c,d];
         }
         return result;
     }
     
     /* transforms a set of co-ordinates to a new position
-     * 
+     *
+     * it assumes the points array is a collection of pairs or sixes
+     *
      * @arg Array position
      * @arg Array points
      */ 
     function applyPosition(position, points){
-        var n  = points.length, xy =[], i = 0, newPoints = [];
+        var n  = points.length, i = 0, j, newPoints = [], subPoints, v, sN;
         while(i < n){
-            newPoints.push(                
-                [
-                points[i][0] + position[0],
-                points[i][1] + position[1]
-                ]);
-            //pad the newpoints
+            //iterate over sub array
+            sN = points[i].length;
+            subPoints = [];//reset the array
+            j = 0;
+            while(j < sN){
+                // push x or y based on odd or even count
+                v = ((j + 1) % 2 === 0) ? points[i][j] + position[0] : points[i][j] + position[1];
+                subPoints.push(v);
+                j += 1;
+            }
+            newPoints.push(subPoints);
             i += 1;   
         }
         return newPoints;
@@ -245,48 +281,83 @@ var form = ( function(module) {
      * path drawing functions
      *
      * @param CanvasRenderingContext2D canvas object
+     * @param array position
      * @param array points
-     * @param boolean close path should be closed automatically
      */
     function drawPath(canvas, position, points) {
         var result = false, i, n, nXY;
-          if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
-             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-                i = 0;
-                n = points.length;
-                nXY = position.length;
-                if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
-                    points = applyPosition(position,points);   
-                    canvas.beginPath();
-                    canvas.moveTo(points[0], points[1]);
-                    while(i < n) {
-                    	canvas.lineTo(points[i][0], points[i][1]);
-                    	i += 1;
-                    }
-                    canvas.fill();
-                    canvas.stroke();
-                    canvas.closePath();
-                    result = true;
+        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
+            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
+            i = 0;
+            n = points.length;
+            nXY = position.length;
+            if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
+                points = applyPosition(position,points);
+                canvas.beginPath();
+                canvas.moveTo(points[0], points[1]);
+                while(i < n) {
+                    canvas.lineTo(points[i][0], points[i][1]);
+                    i += 1;
                 }
+                canvas.fill();
+                canvas.stroke();
+                canvas.closePath();
+                result = true;
             }
+        }
         return result;
-    };
+    }
+
+    /**
+     * curve drawing functions
+     *
+     * @param CanvasRenderingContext2D canvas object
+     * @param array position
+     * @param array points
+     */
+    function drawBezCurve(canvas, position, points, start){
+        var result = false, i = 0, n = points.length, nXY, pN;
+        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
+            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
+            nXY = position.length;
+
+            canvas.beginPath();
+            canvas.moveTo(start[0],start[1]);
+            while(i < n) {
+                canvas.bezierCurveTo(
+                    points[i][0],
+                    points[i][1],
+                    points[i][2],
+                    points[i][3],
+                    points[i][4],
+                    points[i][5]
+                );
+                i += 1;
+            }
+            
+            canvas.fill();
+            canvas.stroke();
+            canvas.closePath();
+            result = true;
+        }
+        return result;
+    }
     
     function processTransforms(points,transforms){
-    var i = 0, 
+        var i = 0,
         n = transforms.length, 
         newPoints = [];
-    if(n > 0){
-        while(i < n){
-            //execute the transformation
-            newPoints = calc[transforms[i]['type']](points,transforms[i]['value']);
-            i+=1;
+        if(n > 0){
+            while(i < n){
+                //execute the transformation
+                newPoints = calc[transforms[i]['type']](points,transforms[i]['value']);
+                i+=1;
+            }
+        }else{
+            newPoints = points;
         }
-    }else{
-        newPoints = points;
-    }
-    return newPoints;
-};
+        return newPoints;
+    };
     
  
     

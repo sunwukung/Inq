@@ -15,8 +15,8 @@ include 'partials/header.php';
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.stroke();
 
-    sqr.draw(ctx,[200,200]);
-    //crc.draw(ctx,[200,200]);
+    //sqr.draw(ctx,[200,200]);
+    crc.draw(ctx,[200,200]);
 }());
 
 </script>

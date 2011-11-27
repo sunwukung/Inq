@@ -320,7 +320,6 @@ var form = ( function(module) {
         if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
             nXY = position.length;
-
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
             while(i < n) {
@@ -331,10 +330,9 @@ var form = ( function(module) {
                     points[i][3],
                     points[i][4],
                     points[i][5]
-                );
+                    );
                 i += 1;
             }
-            
             canvas.fill();
             canvas.stroke();
             canvas.closePath();
@@ -357,7 +355,7 @@ var form = ( function(module) {
             newPoints = points;
         }
         return newPoints;
-    };
+    }
     
  
     

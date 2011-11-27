@@ -20,6 +20,7 @@
  *  @author Marcus Kielly
  *  @version 1.0
  *  @projectDescription this script provides the geometric calculations/transformations of the inq canvas library
+ *  @todo consolidate variable naming conventions
  */
 var calc = ( function(module) {
     
@@ -47,7 +48,7 @@ var calc = ( function(module) {
         var d = false;
         if(q.isN(r)){
             d = r * (180/ Math.PI);
-         }
+        }
         return d;
     }
     
@@ -59,8 +60,8 @@ var calc = ( function(module) {
     */
     function polarToCartesian(p){
         var x,
-            y,
-            result = false;
+        y,
+        result = false;
             
         if(q.isO(p) && q.objHas(p,'r') && q.objHas(p,'t') && (q.isN(p.r)) && (q.isN(p.t)) ){                  
             x = p.r * Math.cos(p.t),
@@ -86,7 +87,7 @@ var calc = ( function(module) {
             result = {
                 r:Math.sqrt((c.x * c.x) + (c.y * c.y)),
                 t:Math.atan2(c.y,c.x)//value is "fixed"               
-                };
+            };
         }        
         return result;
     }  
@@ -98,13 +99,29 @@ var calc = ( function(module) {
     * @arg Number n
     */ 
     function rotatePoint(point,d){
-        var result = false, pPolar;
-        if(q.isA(point) && point.length === 2 && q.isN(point[0]) && q.isN(point[1])){
-         //convert to polar
-         pPolar = cartesianToPolar({x:point[0],y:point[1]});//map points to propertie
-         pPolar.t += degreesToRadians(d);
-         pCart = polarToCartesian(pPolar);
-         result = [pCart.x,pCart.y];
+        var result = false,
+        len = point.length,
+        pPolar,
+        newPoints = [],
+        processedPoint,
+        i = 0;
+        
+        if(q.isA(point)){
+            
+             while(i < len){
+                processedPoint = mRotatePoint(point[i],d);
+                newPoints.push(processedPoint);
+                i += 1;
+            }
+
+            //convert to polar
+            pPolar = cartesianToPolar({
+                x:point[0],
+                y:point[1]
+            });//map points to propertie
+            pPolar.t += degreesToRadians(d);
+            pCart = polarToCartesian(pPolar);
+            result = [pCart.x,pCart.y];
         }
         return result;
     }
@@ -122,10 +139,10 @@ var calc = ( function(module) {
             mRotatePoint = k.memo(rotatePoint);
             //iterate over the array
             len = points.length;
-            while(i < len){  
-               np = mRotatePoint(points[i],d);
-               newPoints.push(np);
-               i += 1;
+            while(i < len){
+                np = mRotatePoint(points[i],d);
+                newPoints.push(np);
+                i += 1;
             }
             result = newPoints;
             
@@ -141,14 +158,23 @@ var calc = ( function(module) {
     * @return Array Z Boolean
     */
     function scalePoint(point,scale){
-        var result = false;
-        if(q.isA(point) && point.length === 2 && q.isA(scale) && point.length === 2){
-            point[0] = point[0] * scale[0];
-            point[1] = point[1] * scale[1];
-            result = point;
-       }
-       return result;
+        var result = false,
+        n = point.length,
+        nP = [],
+        pP,
+        i = 0;
+        if(q.isA(point) && q.isA(scale)){
+            while(i < n){
+                //alternate application of scale
+                pP = ((i + 1) % 2 === 0) ? point[i] * scale[0]: point[i] * scale[1];
+                nP.push(pP);
+                i += 1;
+            }
+            result = nP;
+        }
+        return result;
     }
+
     
     /*
     * scale each item in points relative to its origin point
@@ -161,10 +187,10 @@ var calc = ( function(module) {
         var result = false, i = 0, len, np, newPoints = [];
         if(q.isA(points) && q.isA(scale)){
             len = points.length;
-            while(i < len){  
-               np = scalePoint(points[i],scale);
-               newPoints.push(np);
-               i += 1;
+            while(i < len){
+                np = scalePoint(points[i],scale);
+                newPoints.push(np);
+                i += 1;
             }
             result = newPoints;
         }

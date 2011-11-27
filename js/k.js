@@ -39,7 +39,7 @@ var k = ( function(module) {
             result = copy;
         }
         return result;
-    };  
+    }
     
     /*
     * pseudo classical inheritance pattern
@@ -59,7 +59,7 @@ var k = ( function(module) {
             result = true;
         }
         return result;
-    };
+    }
     
     /*
     * Doug Crockford prototype inheritance pattern 
@@ -75,7 +75,7 @@ var k = ( function(module) {
             result = new f();
         }
         return result;
-    }; 
+    }
     
     /*
     * memoize.js
@@ -90,8 +90,8 @@ var k = ( function(module) {
         if(q.isF(fn)){
             result = function () {
                 var args = Array.prototype.slice.call(arguments),
-                    hash = "",
-                    i = args.length;
+                hash = "",
+                i = args.length;
                 currentArg = null;
                 while (i--) {
                     currentArg = args[i];
@@ -100,8 +100,46 @@ var k = ( function(module) {
                     fn.memoize || (fn.memoize = {});
                 }
                 return (hash in fn.memoize) ? fn.memoize[hash] :
-                    fn.memoize[hash] = fn.apply(this, args);
+                fn.memoize[hash] = fn.apply(this, args);
             };
+        }
+        return result;
+    }
+
+    /**
+     * apply function to each item in an array
+     */
+    function each(a, fn){
+        var result = false,
+        i=0,
+        n;
+        if(q.isA(a) && q.isF(fn)){
+            result = [];
+            n = a.length;
+            while(i < n){
+                result.push(fn(a[i]));
+                i += 1;
+            }
+        }
+        return result;
+    }
+
+    /**
+    * alternates function application over an array
+    */
+    function other(a, fnA, fnB){
+        var result = false,
+        i=0,
+        n,l,
+        r;
+        if(q.isA(a) && q.isF(fnA) && q.isF(fnB)){
+            result = [];
+            n = a.length;
+            while(i < n){
+                r = ((i  % 2) === 0)? fnA(a[i]) : fnB(a[i]);
+                result.push(r);
+                i += 1;
+            }
         }
         return result;
     }
@@ -110,6 +148,8 @@ var k = ( function(module) {
     module.inherit = inherit;
     module.proto = proto;
     module.memo = memo;
-    
+    module.each = each;
+    module.other = other;
+
     return module;
 }(k || {}));

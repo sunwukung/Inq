@@ -127,11 +127,8 @@ var k = ( function(module) {
     /**
     * alternates function application over an array
     */
-    function other(a, fnA, fnB){
-        var result = false,
-        i=0,
-        n,l,
-        r;
+    function other(a, fnA, fnB ,d){
+        var result = false, i = 0, n, r;
         if(q.isA(a) && q.isF(fnA) && q.isF(fnB)){
             result = [];
             n = a.length;

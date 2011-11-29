@@ -235,10 +235,8 @@ var form = ( function(module) {
      * @param Number r radius
      */
     function circleToPoints(r) {
-        var a, b, c, d,
-        x = 0,
-        y = 0,
-        o = r / 1.85,//offset
+        var a, b, c, d, x = 0, y = 0,
+        o = Math.floor(r / 1.85),//offset
         result = false;
         if(q.isN(r)){            
             //offset
@@ -260,20 +258,13 @@ var form = ( function(module) {
      */ 
     function applyPosition(position, points){
         var n  = points.length, i = 0, j, newPoints = [], subPoints, v, sN;
-        while(i < n){
-            //iterate over sub array
-            sN = points[i].length;
-            subPoints = [];//reset the array
-            j = 0;
-            while(j < sN){
-                // push x or y based on odd or even count
-                v = ((j + 1) % 2 === 0) ? points[i][j] + position[0] : points[i][j] + position[1];
-                subPoints.push(v);
-                j += 1;
-            }
-            newPoints.push(subPoints);
-            i += 1;   
-        }
+        k.each(points,
+            function(p){
+                subPoints = k.other(p,
+                    function(sp){return sp + position[0];},
+                    function(sp){return sp + position[1];});
+                newPoints.push(subPoints);
+            });
         return newPoints;
     }
         
@@ -295,10 +286,9 @@ var form = ( function(module) {
                 points = applyPosition(position,points);
                 canvas.beginPath();
                 canvas.moveTo(points[0], points[1]);
-                while(i < n) {
-                    canvas.lineTo(points[i][0], points[i][1]);
-                    i += 1;
-                }
+                k.each(points,function(p){
+                    canvas.lineTo(p[0], p[1]);
+                })
                 canvas.fill();
                 canvas.stroke();
                 canvas.closePath();
@@ -322,17 +312,9 @@ var form = ( function(module) {
             nXY = position.length;
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
-            while(i < n) {
-                canvas.bezierCurveTo(
-                    points[i][0],
-                    points[i][1],
-                    points[i][2],
-                    points[i][3],
-                    points[i][4],
-                    points[i][5]
-                    );
-                i += 1;
-            }
+            k.each(points,function(p){
+                    canvas.bezierCurveTo( p[0], p[1], p[2], p[3], p[4], p[5] );
+                })
             canvas.fill();
             canvas.stroke();
             canvas.closePath();

@@ -104,11 +104,11 @@ var calc = ( function(module) {
         pPolar,
         newPoints = [],
         processedPoint,
+        pCart,
         i = 0;
         
         if(q.isA(point)){
-            
-             while(i < len){
+            while(i < len){
                 processedPoint = mRotatePoint(point[i],d);
                 newPoints.push(processedPoint);
                 i += 1;
@@ -149,7 +149,7 @@ var calc = ( function(module) {
         }
         return result;
     }
-    
+
     /*
     * scale point relative to its origin point
     *
@@ -164,13 +164,10 @@ var calc = ( function(module) {
         pP,
         i = 0;
         if(q.isA(point) && q.isA(scale)){
-            while(i < n){
-                //alternate application of scale
-                pP = ((i + 1) % 2 === 0) ? point[i] * scale[0]: point[i] * scale[1];
-                nP.push(pP);
-                i += 1;
-            }
-            result = nP;
+            result = k.other(point,
+                function(p){return p * scale[0];},
+                function(p){return p * scale[1];}
+            );
         }
         return result;
     }

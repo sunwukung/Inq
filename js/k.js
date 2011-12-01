@@ -111,7 +111,7 @@ var k = ( function(module) {
      */
     function each(a, fn){
         var result = false,
-        i=0,
+        i = 0,
         n;
         if(q.isA(a) && q.isF(fn)){
             result = [];
@@ -125,9 +125,29 @@ var k = ( function(module) {
     }
 
     /**
+     * apply function to each item in an array
+     */
+    function every(a, fn, x){
+        var result = false,
+        i = 0,
+        r,
+        n;
+        if(q.isA(a) && q.isF(fn) && q.isN(x)){
+            result = [];
+            n = a.length;
+            while(i < n){
+                r = (i % x === 0) ?fn(a[i]):a[i];
+                result.push(r);
+                i += 1;
+            }
+        }
+        return result;
+    }
+
+    /**
     * alternates function application over an array
     */
-    function other(a, fnA, fnB ,d){
+    function stripe(a, fnA, fnB ,d){
         var result = false, i = 0, n, r;
         if(q.isA(a) && q.isF(fnA) && q.isF(fnB)){
             result = [];
@@ -146,7 +166,8 @@ var k = ( function(module) {
     module.proto = proto;
     module.memo = memo;
     module.each = each;
-    module.other = other;
+    module.every = every;
+    module.stripe = stripe;
 
     return module;
 }(k || {}));

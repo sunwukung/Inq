@@ -96,26 +96,56 @@ test('each',function(){
 
 });
 
-test('other',function(){
+test('every',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(k.other),'the k namespace contains a method called other');
-    ok((k.other(this.num, this.fn, this.fn) === false &&
-        k.other(this.str, this.fn, this.fn) === false &&
-        k.other(this.obj, this.fn, this.fn) === false &&
-        k.other(this.bool, this.fn, this.fn) === false &&
-        k.other(this.fn, this.fn, this.fn) === false &&
-        k.other(this.arr,this.str, this.fn) === false &&
-        k.other(this.arr,this.num, this.fn) === false &&
-        k.other(this.arr,this.bool, this.fn) === false &&
-        k.other(this.arr,this.obj, this.fn) === false &&
-        k.other(this.arr,this.arr, this.fn) === false &&
-        k.other(this.arr,this.fn, this.str) === false &&
-        k.other(this.arr,this.fn, this.num) === false &&
-        k.other(this.arr,this.fn, this.bool) === false &&
-        k.other(this.arr,this.fn, this.obj) === false &&
-        k.other(this.arr,this.fn, this.arr) === false &&
-        q.isA(k.other(this.arr,this.fn, this.fn))), 'k.other returns false unless first argument is an array and the second argument is a function');
-    nA = k.other(localArr,
+    ok(q.isF(k.every),'the k namespace contains a method called every');
+    ok((k.every(this.num,this.fn, this.num) === false &&
+        k.every(this.str,this.fn, this.num) === false &&
+        k.every(this.obj,this.fn, this.num) === false &&
+        k.every(this.bool,this.fn, this.num) === false &&
+        k.every(this.fn,this.fn, this.num) === false && // end of fun
+        k.every(this.arr,this.str, this.num) === false &&
+        k.every(this.arr,this.num, this.num) === false &&
+        k.every(this.arr,this.bool, this.num) === false &&
+        k.every(this.arr,this.obj, this.num) === false &&
+        k.every(this.arr,this.arr, this.num) === false && // end of array
+        k.every(this.arr,this.fn, this.str) === false &&
+        k.every(this.arr,this.fn, this.obj) === false &&
+        k.every(this.arr,this.fn, this.bool) === false &&
+        k.every(this.arr,this.fn, this.arr) === false &&
+        k.every(this.arr,this.fn, this.fn) === false && // end of array
+        q.isA(k.every(this.arr,this.fn,this.num))), 'k.every returns false unless first argument is an array and the second argument is a function');
+    nA = k.every(localArr,function(v){
+        return v + (v / 2);
+    },3);//15,30,45,60,75
+    ok((nA[0] === 15 &&
+        nA[1] === 20 &&
+        nA[2] === 30 &&
+        nA[3] === 60 &&
+        nA[4] === 50) , 'k.every applies the function to every element of the array');
+
+});
+
+test('stripe',function(){
+    var localArr = [10,20,30,40,50],nA;
+    ok(q.isF(k.stripe),'the k namespace contains a method called stripe');
+    ok((k.stripe(this.num, this.fn, this.fn) === false &&
+        k.stripe(this.str, this.fn, this.fn) === false &&
+        k.stripe(this.obj, this.fn, this.fn) === false &&
+        k.stripe(this.bool, this.fn, this.fn) === false &&
+        k.stripe(this.fn, this.fn, this.fn) === false &&
+        k.stripe(this.arr,this.str, this.fn) === false &&
+        k.stripe(this.arr,this.num, this.fn) === false &&
+        k.stripe(this.arr,this.bool, this.fn) === false &&
+        k.stripe(this.arr,this.obj, this.fn) === false &&
+        k.stripe(this.arr,this.arr, this.fn) === false &&
+        k.stripe(this.arr,this.fn, this.str) === false &&
+        k.stripe(this.arr,this.fn, this.num) === false &&
+        k.stripe(this.arr,this.fn, this.bool) === false &&
+        k.stripe(this.arr,this.fn, this.obj) === false &&
+        k.stripe(this.arr,this.fn, this.arr) === false &&
+        q.isA(k.stripe(this.arr,this.fn, this.fn))), 'k.stripe returns false unless first argument is an array and the second argument is a function');
+    nA = k.stripe(localArr,
     function(v){return v + (v / 2);},
     function(v){return v - (v / 2);}
             );//15,10,45,20,75
@@ -123,6 +153,6 @@ test('other',function(){
         nA[1] === 10 &&
         nA[2] === 45 &&
         nA[3] === 20 &&
-        nA[4] === 75) , 'k.other applies alternating functions to alternating elements of the array');
+        nA[4] === 75) , 'k.stripe applies alternating functions to alternating elements of the array');
 
 });

@@ -83,7 +83,7 @@ var calc = ( function(module) {
     */
     function cartesianToPolar(c){
         var result = false;
-        if(q.isO(c) && q.objHas(c,'x') && q.objHas(c,'y') && (q.isN(c.x)) && (q.isN(c.y)) ){ 
+        if(q.isO(c) && q.objHas(c,'x') && q.objHas(c,'y') && (q.isN(c.x)) && (q.isN(c.y)) ){
             result = {
                 r:Math.sqrt((c.x * c.x) + (c.y * c.y)),
                 t:Math.atan2(c.y,c.x)//value is "fixed"               
@@ -100,31 +100,32 @@ var calc = ( function(module) {
     */ 
     function rotatePoint(point,d){
         var result = false,
-        len = point.length,
         pPolar,
-        newPoints = [],
-        processedPoint,
-        pCart,
-        i = 0;
-        
-        if(q.isA(point)){
-            while(i < len){
-                processedPoint = mRotatePoint(point[i],d);
-                newPoints.push(processedPoint);
-                i += 1;
-            }
-
-            //convert to polar
-            pPolar = cartesianToPolar({
-                x:point[0],
-                y:point[1]
-            });//map points to propertie
-            pPolar.t += degreesToRadians(d);
-            pCart = polarToCartesian(pPolar);
-            result = [pCart.x,pCart.y];
-        }
+        mCartesianToPolar = k.memo(cartesianToPolar),
+        pCart;
+        //convert to polar
+        pPolar = mCartesianToPolar({
+            x:point[0],
+            y:point[1]
+        });//map points to properties
+        pPolar.t += degreesToRadians(d);
+        pCart = polarToCartesian(pPolar);
+        result = [pCart.x,pCart.y];
         return result;
     }
+
+    /*
+    if(q.isA(point)){
+        mRotatePoint = k.memo(rotatePoint);
+        while(i < len){
+            processedPoint = rotateP(point[i],d);
+            console.log(processedPoint);
+            newPoints.push(processedPoint);
+            i += 1;
+        }
+        result = newPoints;
+    }else{
+    */
     
     /**
      * rotate each item in points around its origin point by n degrees
@@ -139,12 +140,18 @@ var calc = ( function(module) {
             mRotatePoint = k.memo(rotatePoint);
             //iterate over the array
             len = points.length;
-            while(i < len){
+            
+             while(i < len){
                 np = mRotatePoint(points[i],d);
                 newPoints.push(np);
                 i += 1;
             }
             result = newPoints;
+           /*
+           result = k.each(points,function(a){
+                return mRotatePoint(a,d);
+            });
+            */
             
         }
         return result;
@@ -164,10 +171,14 @@ var calc = ( function(module) {
         pP,
         i = 0;
         if(q.isA(point) && q.isA(scale)){
-            result = k.other(point,
-                function(p){return p * scale[0];},
-                function(p){return p * scale[1];}
-            );
+            result = k.stripe(point,
+                function(p){
+                    return p * scale[0];
+                },
+                function(p){
+                    return p * scale[1];
+                }
+                );
         }
         return result;
     }

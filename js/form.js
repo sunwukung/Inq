@@ -260,7 +260,7 @@ var form = ( function(module) {
         var n  = points.length, i = 0, j, newPoints = [], subPoints, v, sN;
         k.each(points,
             function(p){
-                subPoints = k.other(p,
+                subPoints = k.stripe(p,
                     function(sp){return sp + position[0];},
                     function(sp){return sp + position[1];});
                 newPoints.push(subPoints);

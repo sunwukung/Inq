@@ -101,10 +101,9 @@ var calc = ( function(module) {
     function rotatePoint(point,d){
         var result = false,
         pPolar,
-        mCartesianToPolar = k.memo(cartesianToPolar),
         pCart;
         //convert to polar
-        pPolar = mCartesianToPolar({
+        pPolar = cartesianToPolar({
             x:point[0],
             y:point[1]
         });//map points to properties
@@ -113,20 +112,7 @@ var calc = ( function(module) {
         result = [pCart.x,pCart.y];
         return result;
     }
-
-    /*
-    if(q.isA(point)){
-        mRotatePoint = k.memo(rotatePoint);
-        while(i < len){
-            processedPoint = rotateP(point[i],d);
-            console.log(processedPoint);
-            newPoints.push(processedPoint);
-            i += 1;
-        }
-        result = newPoints;
-    }else{
-    */
-    
+   
     /**
      * rotate each item in points around its origin point by n degrees
      * 
@@ -135,24 +121,17 @@ var calc = ( function(module) {
      * @return Array | Boolean
      */ 
     function rotate(points,d){
-        var result = false, i = 0, len, np, newPoints = [],mRotatePoint;
-        if(q.isA(points) && q.isN(d)){
-            mRotatePoint = k.memo(rotatePoint);
-            //iterate over the array
-            len = points.length;
-            
-             while(i < len){
-                np = mRotatePoint(points[i],d);
-                newPoints.push(np);
-                i += 1;
+        var result = false;
+        if(q.isA(points) && !q.isEA(points) && q.isN(d)){
+            if(points.length === 2 && q.isN(points[0])){
+                // this is the xy pair?
+                result = rotatePoint(points,d);
+            }else{
+                // recurse
+                result = k.each(points,function(p){
+                    return rotate(p,d);
+                });
             }
-            result = newPoints;
-           /*
-           result = k.each(points,function(a){
-                return mRotatePoint(a,d);
-            });
-            */
-            
         }
         return result;
     }

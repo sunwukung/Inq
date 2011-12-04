@@ -14,11 +14,11 @@ include 'partials/header.php';
     ctx.strokeStyle = 'rgba(0,0,0,100)';
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.stroke();
-
-    sqr.draw(ctx,[200,200]);
     sqr.rotate(45);
-   // crc.scale(2,3);
-   // crc.draw(ctx,[200,200]);
+    sqr.draw(ctx,[200,200]);
+    //crc.scale(2,3);
+    //crc.rotate(45);
+    //crc.draw(ctx,[200,200]);
 }());
 
 </script>

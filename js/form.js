@@ -150,12 +150,10 @@ var form = ( function(module) {
     circle.prototype.draw = function(canvas, position){
         var result = false,
         points,
-        start,
-        mCircleToPoints;
+        start;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
-            mCircleToPoints = k.memo(circleToPoints);
-            points = processTransforms(mCircleToPoints(this.radius),this.transforms);
+            points = processTransforms(circleToPoints(this.radius),this.transforms);
             position = q.isA(position) ? position : [0,0];
 
             points = applyPosition(position,points);
@@ -240,10 +238,10 @@ var form = ( function(module) {
         result = false;
         if(q.isN(r)){            
             //offset
-            a = [x + o, -r, x + r, y - o, x + r, y];
-            b = [x + r, y + o, x + o, y + r, x, y + r];
-            c = [x - o, y + r, x - r, y + o, x - r, y];
-            d = [x - r, -o, x - o, -r, x, -r];
+            a = [[x + o, -r], [x + r, y - o], [x + r, y]];
+            b = [[x + r, y + o], [x + o, y + r], [x, y + r]];
+            c = [[x - o, y + r], [x - r, y + o], [x - r, y]];
+            d = [[x - r, -o], [x - o, -r], [x, -r]];
             result = [a,b,c,d];
         }
         return result;
@@ -255,6 +253,7 @@ var form = ( function(module) {
      *
      * @arg Array position
      * @arg Array points
+     * @todo make recursive
      */ 
     function applyPosition(position, points){
         var n  = points.length, i = 0, j, newPoints = [], subPoints, v, sN;
@@ -313,7 +312,7 @@ var form = ( function(module) {
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
             k.each(points,function(p){
-                    canvas.bezierCurveTo( p[0], p[1], p[2], p[3], p[4], p[5] );
+                    canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
                 })
             canvas.fill();
             canvas.stroke();

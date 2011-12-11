@@ -22,9 +22,13 @@ test('rotate',function(){
        calc.rotate(this.xy,[]) === false &&
        calc.rotate(this.xy,true) === false &&
        q.isA(calc.rotate(this.xy,10))), 'rotate returns false unless first argument is an array and second argument is an integer');
-    //ok(calc.rotate([1,2,3],10) === false, 'rotate returns false if the first array is not composed of paired sub-arrays');
     ok(q.isA(calc.rotate(this.xy,10)),'rotate returns a series of transformed points if provided with the right arguments');
-    
+    var recursiveArr = calc.rotate([
+        [10,10],//depth 1
+        [[20,20],[30,30]],//depth 2
+        [[[40,40],[50,50],[60,60]]]//depth 3
+        ],10);
+    ok(q.isA(recursiveArr),'rotate recurses into an array structure until it encounters numeric pairs');
     });
     
 test('scale',function(){
@@ -72,7 +76,8 @@ test('radiansToDegrees',function(){
         calc.radiansToDegrees({}) === false &&
         calc.radiansToDegrees([]) === false && 
         calc.radiansToDegrees(false) === false),
-        'calc.radiansToDegrees returns false on bad arguments'); 
+        'calc.radiansToDegrees returns false on bad arguments');
+        console.log(calc.radiansToDegrees(1));
     ok(q.isN(calc.radiansToDegrees(1)),'calc.radiansToDegrees returns a radian value in degrees');
 });
 
@@ -82,7 +87,7 @@ test('degreesToRadians',function(){
         calc.degreesToRadians({}) === false &&
         calc.degreesToRadians([]) === false &&
         calc.degreesToRadians(false) === false),
-        'calc.degreesToRadians returns false on bad arguments'); 
+        'calc.degreesToRadians returns false on bad arguments');
     ok(q.isN(calc.degreesToRadians(90)),'calc.degreesToRadians returns a radian value in degrees');
 });
 

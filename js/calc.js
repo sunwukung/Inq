@@ -29,11 +29,13 @@ var calc = ( function(module) {
     *
     * @arg Number d
     * @return Number r
+    * @todo allow for varying decimal precision
     */
     function degreesToRadians(d){
         var r = false;
         if(q.isN(d)){
             r = d * (Math.PI/180);
+            r = (q.isN(r)) ? Number(r.toFixed(3)) : false;
         }
         return r;
     }
@@ -43,11 +45,13 @@ var calc = ( function(module) {
      *
      * @arg Number r
      * @return Number d
+     * @todo allow for varying decimal precision
      */
     function radiansToDegrees(r){
         var d = false;
         if(q.isN(r)){
             d = r * (180/ Math.PI);
+            d = (q.isN(d)) ? Number(d.toFixed(3)) : false;
         }
         return d;
     }
@@ -123,8 +127,8 @@ var calc = ( function(module) {
     function rotate(points,d){
         var result = false;
         if(q.isA(points) && !q.isEA(points) && q.isN(d)){
+            // is this an xy pair?
             if(points.length === 2 && q.isN(points[0])){
-                // this is the xy pair?
                 result = rotatePoint(points,d);
             }else{
                 // recurse
@@ -170,16 +174,17 @@ var calc = ( function(module) {
     * @arg Array scale
     * @return Array Z Boolean
     */
-    function scale(points,scale){
+    function scale(points,scl){
         var result = false, i = 0, len, np, newPoints = [];
-        if(q.isA(points) && q.isA(scale)){
-            len = points.length;
-            while(i < len){
-                np = scalePoint(points[i],scale);
-                newPoints.push(np);
-                i += 1;
+        if(q.isA(points) && q.isA(scl)){
+            if(points.length === 2 && q.isN(points[0])){
+                result = scalePoint(points,scl);
+            }else{
+                // recurse
+                result = k.each(points,function(p){
+                    return scale(p,scl);
+                });
             }
-            result = newPoints;
         }
         return result;
     }

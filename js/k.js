@@ -184,7 +184,7 @@ var k = ( function(module) {
                 //loop the array
                 result = [];
                 while(i < len){
-                    result.push(fn.apply(null,a.slice(i, i+n)));
+                    result.push(fn(a.slice(i, i+n)));
                     i += n;
                 }
             }
@@ -202,8 +202,6 @@ var k = ( function(module) {
     module.every = every;
     module.stripe = stripe;
     module.chunk = chunk;
-    module.isNumeric = isNumeric;
-    module.isFloat = isFloat;
     
     return module;
 }(k || {}));

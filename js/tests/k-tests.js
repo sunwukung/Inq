@@ -183,14 +183,14 @@ test('chunk',function(){
     ok(k.chunk(this.arr,this.fn, 7) === false, 'k.chunk returns false if number of elements in third argument is not a factor of first.length');
     //output test
     arrayA = k.chunk(localArr,
-        function(a,b){
-            return a + b;
+        function(arr){
+            return arr[0] + arr[1];
         },
         2
         );//30,70,110
     arrayB = k.chunk(localArr,
-        function(a, b, c){
-            return a + b + c;
+        function(arr){
+            return arr[0] + arr[1] + arr[2];
         },
         3
         );//60,150

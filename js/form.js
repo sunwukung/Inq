@@ -92,12 +92,11 @@ var form = ( function(module) {
      */
     rectangle.prototype.draw = function(canvas, position){
         var result = false, 
-        points,
-        mRectangleToPoints;
+        points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
-            mRectangleToPoints = k.memo(rectangleToPoints);
-            points = processTransforms(mRectangleToPoints(this),this.transforms); 
+            points = processTransforms(rectangleToPoints(this),this.transforms);
+            console.log(points);
             position = q.isA(position) ? position : [0,0];
             drawPath(canvas, position, points);
             result = true;
@@ -155,7 +154,6 @@ var form = ( function(module) {
             //create a point matrix if one isn't already defined
             points = processTransforms(circleToPoints(this.radius),this.transforms);
             position = q.isA(position) ? position : [0,0];
-
             points = applyPosition(position,points);
             start =  [points[3][4],points[3][5]];
             drawBezCurve(canvas, position, points, start);
@@ -256,12 +254,16 @@ var form = ( function(module) {
      * @todo make recursive
      */ 
     function applyPosition(position, points){
-        var n  = points.length, i = 0, j, newPoints = [], subPoints, v, sN;
+        var newPoints = [], subPoints;
         k.each(points,
             function(p){
                 subPoints = k.stripe(p,
-                    function(sp){return sp + position[0];},
-                    function(sp){return sp + position[1];});
+                    function(sp){
+                        return sp + position[0];
+                    },
+                    function(sp){
+                        return sp + position[1];
+                    });
                 newPoints.push(subPoints);
             });
         return newPoints;
@@ -305,15 +307,15 @@ var form = ( function(module) {
      * @param array points
      */
     function drawBezCurve(canvas, position, points, start){
-        var result = false, i = 0, n = points.length, nXY, pN;
+        var result = false;
         if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-            nXY = position.length;
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
+            console.log(points);
             k.each(points,function(p){
-                    canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
-                })
+                canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
+            })
             canvas.fill();
             canvas.stroke();
             canvas.closePath();

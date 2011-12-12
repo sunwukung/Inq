@@ -124,18 +124,14 @@ var calc = ( function(module) {
      * @arg Number n
      * @return Array | Boolean
      */ 
-    function rotate(points,d){
+        function rotate(points,d){
         var result = false;
         if(q.isA(points) && !q.isEA(points) && q.isN(d)){
-            // is this an xy pair?
-            if(points.length === 2 && q.isN(points[0])){
-                result = rotatePoint(points,d);
-            }else{
-                // recurse
-                result = k.each(points,function(p){
+            result = (points.length === 2 && q.isN(points[0])) ?
+                rotatePoint(points,d) : // xy pair
+                k.each(points,function(p){ //recurse
                     return rotate(p,d);
                 });
-            }
         }
         return result;
     }
@@ -150,8 +146,6 @@ var calc = ( function(module) {
     function scalePoint(point,scale){
         var result = false,
         n = point.length,
-        nP = [],
-        pP,
         i = 0;
         if(q.isA(point) && q.isA(scale)){
             result = k.stripe(point,

@@ -17,7 +17,7 @@ include 'partials/header.php';
     //sqr.rotate(45);
     //sqr.draw(ctx,[200,200]);
     crc.scale(2,3);
-    //crc.rotate(45);
+    crc.rotate(45);
     crc.draw(ctx,[200,200]);
 }());
 

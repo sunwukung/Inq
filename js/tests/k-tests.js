@@ -146,9 +146,13 @@ test('stripe',function(){
         k.stripe(this.arr,this.fn, this.arr) === false &&
         q.isA(k.stripe(this.arr,this.fn, this.fn))), 'k.stripe returns false unless first argument is an array and the second argument is a function');
     nA = k.stripe(localArr,
-    function(v){return v + (v / 2);},
-    function(v){return v - (v / 2);}
-            );//15,10,45,20,75
+        function(v){
+            return v + (v / 2);
+        },
+        function(v){
+            return v - (v / 2);
+        }
+        );//15,10,45,20,75
     ok((nA[0] === 15 &&
         nA[1] === 10 &&
         nA[2] === 45 &&
@@ -156,3 +160,43 @@ test('stripe',function(){
         nA[4] === 75) , 'k.stripe applies alternating functions to alternating elements of the array');
 
 });
+
+test('chunk',function(){
+    var localArr = [10,20,30,40,50,60], arrayA, arrayB;
+    ok(q.isF(k.chunk),'the k namespace contains a method called chunk');
+    ok((k.chunk(this.num, this.fn, this.fn) === false &&
+        k.chunk(this.str, this.fn, this.fn) === false &&
+        k.chunk(this.obj, this.fn, this.fn) === false &&
+        k.chunk(this.bool, this.fn, this.fn) === false &&
+        k.chunk(this.fn, this.fn, this.fn) === false &&//false on bad 1st
+        k.chunk(this.arr, this.str, this.fn) === false &&
+        k.chunk(this.arr, this.num, this.fn) === false &&
+        k.chunk(this.arr, this.bool, this.fn) === false &&
+        k.chunk(this.arr, this.obj, this.fn) === false &&
+        k.chunk(this.arr, this.arr, this.fn) === false &&//false on bad 2nd
+        k.chunk(this.arr, this.fn, this.str) === false &&
+        k.chunk(this.arr, this.fn, this.fn) === false &&
+        k.chunk(this.arr, this.fn, this.bool) === false &&
+        k.chunk(this.arr, this.fn, this.obj) === false &&
+        k.chunk(this.arr, this.fn, this.arr) === false &&//false on bad 3rd
+        q.isA(k.chunk(localArr,this.fn, 2))), 'k.chunk returns false unless first argument is an array, the second argument is a function and the last argument is an integer');
+    ok(k.chunk(this.arr,this.fn, 7) === false, 'k.chunk returns false if number of elements in third argument is not a factor of first.length');
+    //output test
+    arrayA = k.chunk(localArr,
+        function(a,b){
+            return a + b;
+        },
+        2
+        );//30,70,110
+    arrayB = k.chunk(localArr,
+        function(a, b, c){
+            return a + b + c;
+        },
+        3
+        );//60,150
+    ok((arrayA[0] === 30 &&
+        arrayA[1] === 70 &&
+        arrayA[2] === 110) , 'k.chunk applies functions to array chunks of size defined by last argument');
+
+});
+

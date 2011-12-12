@@ -108,6 +108,9 @@ var k = ( function(module) {
 
     /**
      * apply function to each item in an array
+     * 
+     * @param Array a
+     * @param Function fn
      */
     function each(a, fn){
         var result = false,
@@ -125,7 +128,7 @@ var k = ( function(module) {
     }
 
     /**
-     * apply function to each item in an array
+     * apply function to each item in an array that is divisible by x
      */
     function every(a, fn, x){
         var result = false,
@@ -146,8 +149,12 @@ var k = ( function(module) {
 
     /**
     * alternates function application over an array
+    * 
+    * @param Array a
+    * @param Function fnA
+    * @param Function fnB
     */
-    function stripe(a, fnA, fnB ,d){
+    function stripe(a, fnA, fnB){
         var result = false, i = 0, n, r;
         if(q.isA(a) && q.isF(fnA) && q.isF(fnB)){
             result = [];
@@ -161,6 +168,32 @@ var k = ( function(module) {
         return result;
     }
     
+    /**
+     * applies function to chunks of an array
+     * 
+     * @param Array a
+     * @param Function fn
+     * @param Number n chunk size
+     */
+    function chunk(a, fn, n){
+        var result = false, i=0, len;
+        if(q.isA(a) && q.isF(fn) && q.isN(n)){
+            len = a.length;
+            //ensure the chunk is compatible with the list size
+            if(len % n === 0){
+                //loop the array
+                result = [];
+                while(i < len){
+                    result.push(fn.apply(null,a.slice(i, i+n)));
+                    i += n;
+                }
+            }
+        }
+        return result;
+    }
+    
+
+    
     module.clone = clone;
     module.inherit = inherit;
     module.proto = proto;
@@ -168,6 +201,9 @@ var k = ( function(module) {
     module.each = each;
     module.every = every;
     module.stripe = stripe;
-
+    module.chunk = chunk;
+    module.isNumeric = isNumeric;
+    module.isFloat = isFloat;
+    
     return module;
 }(k || {}));

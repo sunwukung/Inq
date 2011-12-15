@@ -6,17 +6,18 @@ include 'partials/header.php';
 <script>
 (function(){
     var sqr = form.rec(50,50),
-        crc = form.crc(50),
+        crc = form.crc(100),
         ctx = document.getElementById('ezl').getContext('2d');
+
 
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.strokeStyle = 'rgba(0,0,0,100)';
     ctx.fillStyle = 'rgba(0,0,0,0)';
-    ctx.stroke();
-    //sqr.rotate(45);
-    //sqr.draw(ctx,[200,200]);
-    crc.scale(2,3);
+    
+    sqr.scale(2,1);
+    sqr.draw(ctx,[200,200]);
+    crc.scale(2,1);
     crc.rotate(45);
     crc.draw(ctx,[200,200]);
 }());

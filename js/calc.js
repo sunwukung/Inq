@@ -161,7 +161,7 @@ var calc = ( function(module) {
     }
 
     
-    /*
+   /*
     * scale each item in points relative to its origin point
     *
     * @arg Array points

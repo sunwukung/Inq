@@ -96,7 +96,6 @@ var form = ( function(module) {
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
             points = processTransforms(rectangleToPoints(this),this.transforms);
-            console.log(points);
             position = q.isA(position) ? position : [0,0];
             drawPath(canvas, position, points);
             result = true;
@@ -155,7 +154,11 @@ var form = ( function(module) {
             points = processTransforms(circleToPoints(this.radius),this.transforms);
             position = q.isA(position) ? position : [0,0];
             points = applyPosition(position,points);
-            start =  [points[3][4],points[3][5]];
+            start =  [points[3][2][0],points[3][2][1]];
+            canvas.moveTo(points[3][4],points[3][5]);
+            canvas.arc(points[3][4],points[3][5],10,0,360,true);
+            canvas.stroke();
+            
             drawBezCurve(canvas, position, points, start);
             result = true;
         }
@@ -244,6 +247,10 @@ var form = ( function(module) {
         }
         return result;
     }
+
+    function translatePoint(){
+
+    }
     
     /* transforms a set of co-ordinates to a new position
      *
@@ -257,14 +264,19 @@ var form = ( function(module) {
         var newPoints = [], subPoints;
         k.each(points,
             function(p){
-                subPoints = k.stripe(p,
-                    function(sp){
-                        return sp + position[0];
-                    },
-                    function(sp){
-                        return sp + position[1];
-                    });
-                newPoints.push(subPoints);
+                if(q.isN(p[0]) && p.length === 2){
+                    subPoints = k.stripe(p,
+                        function(sp){
+                            return sp + position[0];
+                        },
+                        function(sp){
+                            return sp + position[1];
+                        });
+                    newPoints.push(subPoints);
+                } else if (p.length > 2){
+                    //iterate
+                    newPoints.push(applyPosition(position,p));
+                }
             });
         return newPoints;
     }
@@ -312,7 +324,6 @@ var form = ( function(module) {
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
-            console.log(points);
             k.each(points,function(p){
                 canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
             })
@@ -323,24 +334,18 @@ var form = ( function(module) {
         }
         return result;
     }
-    
-    function processTransforms(points,transforms){
-        var i = 0,
-        n = transforms.length, 
-        newPoints = [];
-        if(n > 0){
-            while(i < n){
-                //execute the transformation
-                newPoints = calc[transforms[i]['type']](points,transforms[i]['value']);
-                i+=1;
-            }
-        }else{
-            newPoints = points;
+
+    function processTransforms(points, transforms){
+        if((q.isA(points) && points.length > 0) && (q.isA(transforms) && transforms.length > 0)){
+            //get the next transformation
+            var t = transforms[0]['type'],
+            v = transforms[0]['value'];
+            points = calc[t](points,v);
+            return processTransforms(points,transforms.slice(1));
+        } else {
+            return points;
         }
-        return newPoints;
     }
-    
- 
     
     // REVEAL    
     module.rec = rec;
@@ -349,7 +354,6 @@ var form = ( function(module) {
     module.crv = crv;
     module.drawPath = drawPath;
     module.rectangleToPoints = rectangleToPoints;
-    
     return module;
 
 }(form || {}));

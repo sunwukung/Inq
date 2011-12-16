@@ -191,8 +191,21 @@ var k = ( function(module) {
         }
         return result;
     }
-    
 
+    function filter(a,f){
+        var result = false, i = 0, len;
+        if(q.isA(a) && q.isF(f)){
+            len = a.length;
+            result = [];
+            while(i < len){
+                if(f(a[i])){//if this item passes the filter criteria
+                    result.push(a[i]);
+                }
+                i++;
+            }
+        }
+        return result;
+    }
     
     module.clone = clone;
     module.inherit = inherit;
@@ -202,6 +215,7 @@ var k = ( function(module) {
     module.every = every;
     module.stripe = stripe;
     module.chunk = chunk;
+    module.filter = filter;
     
     return module;
 }(k || {}));

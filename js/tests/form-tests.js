@@ -8,6 +8,12 @@ module('form',{
         this.circles = {
             a : form.crc(10),
             b : form.rec(20)
+        },
+        this.paths = {
+            a : form.path([[10,30],[20,10],[30,30],[40,10]])
+        },
+        this.curves = {
+
         }
     },
     teardown : function(){
@@ -15,9 +21,9 @@ module('form',{
         this.rectangles = {
             a : form.rec(10,10),
             b : form.rec(20,20)            
-            };
-        }    
-    });
+        };
+    }
+});
 
 test('exists', function() {
     ok(q.isO(form), 'the form namespace exists');
@@ -36,7 +42,8 @@ test('rec',function(){
     ok((!q.isU(r.a.h) && q.isN(r.a.h)), 'objects produced by form.rec have an Integer property : h');    
     ok((function(){
         r.b.x = 'foo';//bad value
-        return r.a.x !== 'foo';}()), 'objects produced by form.rec have instance specific properties');         
+        return r.a.x !== 'foo';
+    }()), 'objects produced by form.rec have instance specific properties');
     ok(q.isF(r.a.draw), 'objects produced by form.rec have a method called draw');
     ok((r.a.draw(1) === false &&
         r.a.draw('s') === false &&
@@ -62,7 +69,7 @@ test('rec.rotate',function(){
     r.a.rotate(12);
     ok((r.a.transforms[0]['type']  === 'rotate' && r.a.transforms[0]['value'] === 10 &&
         r.a.transforms[1]['type']  === 'rotate' && r.a.transforms[1]['value'] === 12
-    ),'calling the rotate method more than once puts additional objects with a type property "rotate" into the "transforms" array'); 
+        ),'calling the rotate method more than once puts additional objects with a type property "rotate" into the "transforms" array');
 });
 
 test('rec.scale',function(){
@@ -79,8 +86,8 @@ test('rec.scale',function(){
     ok(r.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
     r.a.scale(20,20);
     ok((r.a.transforms[0]['type']  === 'scale' && q.isA(r.a.transforms[0]['value']) && r.a.transforms[0]['value'][0] === 10 &&
-       r.a.transforms[1]['type']  === 'scale' && q.isA(r.a.transforms[1]['value']) && r.a.transforms[1]['value'][0] === 20
-    ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array'); 
+        r.a.transforms[1]['type']  === 'scale' && q.isA(r.a.transforms[1]['value']) && r.a.transforms[1]['value'][0] === 20
+        ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
 });
 
 
@@ -92,25 +99,37 @@ test('crc',function(){
         form.crc(this.obj) === false &&
         form.crc(this.bool) === false &&
         form.crc(this.fn) === false),
-        'form.crc returns false if not provided a numeric argument');
+    'form.crc returns false if not provided a numeric argument');
     ok(q.isO(form.crc(10)),'form.crc returns a circle object if provided with a numeric argument');
     c.a.transforms = [];
     c.a.scale(10,10);
     ok(c.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
-        c.a.scale(20,20);
+    c.a.scale(20,20);
     ok((c.a.transforms[0]['type']  === 'scale' && q.isA(c.a.transforms[0]['value']) && c.a.transforms[0]['value'][0] === 10 &&
         c.a.transforms[1]['type']  === 'scale' && q.isA(c.a.transforms[1]['value']) && c.a.transforms[1]['value'][0] === 20
-    ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array'); 
+        ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
 });
 
-test('lin',function(){
-    ok(typeof form.lin === 'function','form.lin is a function');
-    ok((form.lin(this.str) === false &&
-        form.lin(this.num) === false &&
-        form.lin(this.obj) === false &&
-        form.lin(this.bool) === false &&
-        form.lin(this.fn) === false),
-        'form.lin returns false on bad arguments');
+test('path',function(){
+    ok(typeof form.path === 'function','form.lin is a function');
+    ok((form.path(this.str) === false &&
+        form.path(this.num) === false &&
+        form.path(this.obj) === false &&
+        form.path(this.bool) === false &&
+        form.path(this.fn) === false &&
+        form.path([]) === false &&
+        form.path([1,2,3]) === false),
+    'form.path returns false on bad arguments');
+    ok(q.isO(form.path([[10,10],[20,30],[30,10],[40,30]])),'form.path returns a path object if provided with an array of numeric xy pairs in arrays');
+    /*
+    c.a.transforms = [];
+    c.a.scale(10,10);
+    ok(c.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
+    c.a.scale(20,20);
+    ok((c.a.transforms[0]['type']  === 'scale' && q.isA(c.a.transforms[0]['value']) && c.a.transforms[0]['value'][0] === 10 &&
+        c.a.transforms[1]['type']  === 'scale' && q.isA(c.a.transforms[1]['value']) && c.a.transforms[1]['value'][0] === 20
+        ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
+        */
 });
 
 test('crv',function(){
@@ -120,5 +139,15 @@ test('crv',function(){
         form.crv(this.obj) === false &&
         form.crv(this.bool) === false &&
         form.crv(this.fn) === false),
-        'form.crv returns false on bad arguments');
+    'form.crv returns false on bad arguments');
+    /*
+    ok(q.isO(form.crc(10)),'form.crc returns a circle object if provided with a numeric argument');
+    c.a.transforms = [];
+    c.a.scale(10,10);
+    ok(c.a.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
+    c.a.scale(20,20);
+    ok((c.a.transforms[0]['type']  === 'scale' && q.isA(c.a.transforms[0]['value']) && c.a.transforms[0]['value'][0] === 10 &&
+        c.a.transforms[1]['type']  === 'scale' && q.isA(c.a.transforms[1]['value']) && c.a.transforms[1]['value'][0] === 20
+        ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
+        */
 });

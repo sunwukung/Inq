@@ -200,3 +200,25 @@ test('chunk',function(){
 
 });
 
+test('filter',function(){
+    ok(q.isF(k.filter), 'k namespace contains a method called filter');
+    ok((k.filter(this.num,this.fn) === false &&
+        k.filter(this.str,this.fn) === false &&
+        k.filter(this.obj,this.fn) === false &&
+        k.filter(this.bool,this.fn) === false &&
+        k.filter(this.fn,this.fn) === false &&
+        k.filter(this.arr,this.str) === false &&
+        k.filter(this.arr,this.num) === false &&
+        k.filter(this.arr,this.bool) === false &&
+        k.filter(this.arr,this.obj) === false &&
+        k.filter(this.arr,this.arr) === false &&
+        q.isA(k.filter(this.arr,this.fn))), 'k.filter returns false unless first argument is an array and the second argument is a function');
+    var a = [1,2,'3',4],fOne, fTwo;
+    fOne = k.filter(a, function(i){
+        return q.isN(i)?true:false;
+    });
+    ok((q.isA(fOne) && fOne.length === 3 &&
+        (q.isN(fOne[0]) && q.isN(fOne[1]) && q.isN(fOne[2]))),
+        'k.filter returns only those items in the list that pass the validation function');
+});
+

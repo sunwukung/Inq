@@ -164,6 +164,7 @@ var form = ( function(module) {
         }
         return result;
     };
+
     /*
     * returns a circle object
     *
@@ -179,23 +180,10 @@ var form = ( function(module) {
     }
     
     //-----------------------------------------------------------------------------------
-    
     /*
-    * returns a line object
-    *
-    * @arg Object p points
-    * @return Object | Boolean
-    */
-    function lin(p){
-        var l = false;
-        if(q.isA(p)){
-            l = {};
-        }
-        return l;
-    }
-    
-    //-----------------------------------------------------------------------------------
-    
+     * CURVE
+     */
+
     /*
     * returns a curve object
     *
@@ -209,7 +197,64 @@ var form = ( function(module) {
         }
         return c;
     }
-    
+
+    //-----------------------------------------------------------------------------------
+    /*
+     * PATH
+     */
+    /*
+    * returns a path object
+    *
+    * @arg Object p points
+    * @return Object | Boolean
+    */
+    function path(p){
+        var c = false;
+        if(q.isA(p) && !q.isEA(p) && q.isA(p[0])){
+            // check the array
+            c = {};
+        }
+        return c;
+    }
+    //-----------------------------------------------------------------------------------
+    /*
+     * POLY
+     */
+    /*
+    * returns a path object
+    *
+    * @arg Object p points
+    * @return Object | Boolean
+    */
+    function poly(p){
+        var c = false;
+        if(q.isA(p)){
+            c = {};
+        }
+        return c;
+    }
+    //-----------------------------------------------------------------------------------
+    /*
+     * STAR
+     */
+    /*
+    * returns a path object
+    *
+    * @arg Object p points
+    * @return Object | Boolean
+    */
+    function star(p){
+        var c = false;
+        if(q.isA(p)){
+            c = {};
+        }
+        return c;
+    }
+
+    //-----------------------------------------------------------------------------------
+    /*
+     * UTILITIES
+     */
     /*
      * converts rectangle object to XY list
      * 
@@ -292,8 +337,6 @@ var form = ( function(module) {
         var result = false, i, n, nXY;
         if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-            i = 0;
-            n = points.length;
             nXY = position.length;
             if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
                 points = applyPosition(position,points);
@@ -350,10 +393,10 @@ var form = ( function(module) {
     // REVEAL    
     module.rec = rec;
     module.crc = crc;
-    module.lin = lin;
     module.crv = crv;
-    module.drawPath = drawPath;
-    module.rectangleToPoints = rectangleToPoints;
+    module.path = path;
+    module.poly = poly;
+    module.star = star;
     return module;
 
 }(form || {}));

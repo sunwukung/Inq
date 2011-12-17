@@ -23,7 +23,7 @@
 */
 var form = ( function(module) {
 
-    var form,rectangle,circle,curve,line;
+    var form, rectangle, circle, curve;
        
     /*
     * base form object from which all forms are derived
@@ -155,10 +155,6 @@ var form = ( function(module) {
             position = q.isA(position) ? position : [0,0];
             points = applyPosition(position,points);
             start =  [points[3][2][0],points[3][2][1]];
-            canvas.moveTo(points[3][4],points[3][5]);
-            canvas.arc(points[3][4],points[3][5],10,0,360,true);
-            canvas.stroke();
-            
             drawBezCurve(canvas, position, points, start);
             result = true;
         }
@@ -185,15 +181,78 @@ var form = ( function(module) {
      */
 
     /*
+    * CIRCLE
+    *
+    * constructor method for rectangles
+    * private implementation of form.rec i
+    *
+    * @arg Number radius
+    */
+    curve = function(p, s){
+        form.apply(this,arguments);
+        this.points = p;
+        this.start = s;
+    };
+
+    // apply parent prototype before augmenting the child object
+    k.inherit(curve,form);
+
+    curve.prototype.draw = function(canvas, position){
+        var result = false,
+        points,
+        start;
+        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
+            //create a point matrix if one isn't already defined
+            points = processTransforms(this.points,this.transforms);
+            position = q.isA(position) ? position : [0,0];
+            points = applyPosition(position,points);
+            start =  applyPosition(position, this.start);//wrong...
+            console.log(start); 
+            drawBezCurve(canvas, position, points, this.start);
+            result = true;
+        }
+        return result;
+    }
+
+    /*
+     * @todo optimise... or abandon
+     */
+    function validCurve(c){
+        var result = true,i,l;
+        if(q.isA(c)){
+            i = 0;
+            l = c.length;
+            while(i < l) {
+                if(q.isA(c[i])){
+                    var cN = c[i].length, j = 0;
+                    while(j < cN){
+                        if(!q.isA(c[i][j]) ||
+                            (q.isA(c[i][j]) && (c[i][j].length !== 2 || !q.isN(c[i][j][0]) || !q.isN(c[i][j][1])))
+                            ){
+                            result = false;
+                            break;
+                        }
+                        j = j + 1;
+                    }
+                    i = i + 1;
+                }
+            }
+        }
+        return result;
+    }
+
+    /*
     * returns a curve object
     *
     * @arg Object p points
     * @return Object | Boolean
     */
-    function crv(p){
+    function crv(p,s){
         var c = false;
         if(q.isA(p)){
-            c = {};
+            if(s !== undefined && q.isA(s) && s.length === 2 && q.isN(s[0]) && q.isN(s[1])){
+                c = (validCurve(p))? new curve(p, s) : false;
+            }
         }
         return c;
     }
@@ -251,6 +310,23 @@ var form = ( function(module) {
         return c;
     }
 
+    /*
+     * STAR
+     */
+    /*
+    * returns a wave object
+    *
+    * @arg Object p points
+    * @return Object | Boolean
+    */
+    function wave(p){
+        var c = false;
+        if(q.isA(p)){
+            c = {};
+        }
+        return c;
+    }
+
     //-----------------------------------------------------------------------------------
     /*
      * UTILITIES
@@ -293,10 +369,6 @@ var form = ( function(module) {
         return result;
     }
 
-    function translatePoint(){
-
-    }
-    
     /* transforms a set of co-ordinates to a new position
      *
      * it assumes the points array is a collection of pairs or sixes
@@ -397,6 +469,7 @@ var form = ( function(module) {
     module.path = path;
     module.poly = poly;
     module.star = star;
+    module.wave = wave;
     return module;
 
 }(form || {}));

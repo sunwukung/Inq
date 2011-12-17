@@ -8,12 +8,21 @@ include 'partials/header.php';
     (function(){
         var sqr = form.rec(50,50),
         crc = form.crc(100),
+        crv = form.crv([
+                    [[300,300],[300,300],[400,300]],
+                    [[500,300],[600,200],[600,100]]
+                    ],[300,300]);
         ctx = document.getElementById('ezl').getContext('2d'),
         n = 0;
         ctx.fillStyle = 'rgba(0,0,0,0)';
-        sqr.scale(2,1);
+        sqr.scale(1,2);
         crc.scale(1,2);
-
+        crc.rotate(45);
+        sqr.rotate(-45);
+        sqr.draw(ctx,[200,200]);
+        crc.draw(ctx,[200,200]);
+        crv.draw(ctx,[200,200]);
+        /*
         function animated() {
             if(n < 360) {
                 ctx.clearRect(0, 0, 960, 400);
@@ -27,6 +36,7 @@ include 'partials/header.php';
         }
 
         animated();
+         */
     }());
 
 </script>

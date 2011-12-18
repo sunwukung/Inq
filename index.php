@@ -8,9 +8,10 @@ include 'partials/header.php';
     (function(){
         var sqr = form.rec(50,50),
         crc = form.crc(100),
+        pth = form.pth([[200,200],[300,100],[400,200],[500,100]],[100,100]),
         crv = form.crv([
-                    [[0,400],[200,400],[400,400]]
-                    ],[300,300]);
+                    [[100,200],[200,400],[400,400]]
+                    ],[100,100]);
         ctx = document.getElementById('ezl').getContext('2d'),
         n = 0;
         ctx.fillStyle = 'rgba(0,0,0,0)';
@@ -21,6 +22,7 @@ include 'partials/header.php';
         sqr.draw(ctx,[200,200]);
         crc.draw(ctx,[200,200]);
         crv.draw(ctx,[200,200]);
+        pth.draw(ctx,200,200);
         /*
         function animated() {
             if(n < 360) {

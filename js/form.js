@@ -23,7 +23,7 @@
 */
 var form = ( function(module) {
 
-    var form, rectangle, circle, curve;
+    var form, rectangle, circle, path, curve;
        
     /*
     * base form object from which all forms are derived
@@ -71,7 +71,7 @@ var form = ( function(module) {
     * RECTANGLE
     * 
     * constructor method for rectangles
-    * private implementation of form.rec i
+    * private implementation of form.rec
     * 
     * @arg Number width
     * @arg Number height
@@ -123,8 +123,8 @@ var form = ( function(module) {
     /*
     * CIRCLE
     * 
-    * constructor method for rectangles
-    * private implementation of form.rec i
+    * constructor method for circles
+    * private implementation of form.crc
     * 
     * @arg Number radius
     */
@@ -174,6 +174,58 @@ var form = ( function(module) {
         }
         return result;
     }
+    //-----------------------------------------------------------------------------------
+    /*
+     * PATH
+     */
+
+    /*
+    * PATH
+    *
+    * constructor method for (bezier) curves
+    * private implementation of form.crv
+    *
+    * @arg Number radius
+    */
+    path = function(p, s){
+        form.apply(this,arguments);
+        this.points = p;
+        this.start = s;
+    };
+
+    // apply parent prototype before augmenting the child object
+    k.inherit(path,form);
+
+    path.prototype.draw = function(canvas, position){
+        var result = false,
+        points,
+        start;
+        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
+            //create a point matrix if one isn't already defined
+            points = processTransforms(this.points,this.transforms);
+            position = q.isA(position) ? position : [0,0];
+            points = calc.move(points, position);
+            start = calc.move(this.start, position);
+            drawPath(canvas, position, points, start);
+            result = true;
+        }
+        return result;
+    }
+
+    /*
+    * returns a path object
+    *
+    * @arg Object p points
+    * @return Object | Boolean
+    */
+    function pth(points,start){
+        var p = false;
+        //if(q.isA(points) && !q.isEA(points) && q.isA(points[0])){
+            // check the array
+            p = new path(points,start);
+        //}
+        return p;
+    }
     
     //-----------------------------------------------------------------------------------
     /*
@@ -181,10 +233,10 @@ var form = ( function(module) {
      */
 
     /*
-    * CIRCLE
+    * CURVE
     *
-    * constructor method for rectangles
-    * private implementation of form.rec i
+    * constructor method for (bezier) curves
+    * private implementation of form.crv
     *
     * @arg Number radius
     */
@@ -205,8 +257,9 @@ var form = ( function(module) {
             //create a point matrix if one isn't already defined
             points = processTransforms(this.points,this.transforms);
             position = q.isA(position) ? position : [0,0];
-            points = calc.move(position,points);
-            drawBezCurve(canvas, position, points, [0,400]);
+            points = calc.move(points, position);
+            start = calc.move(this.start, position);
+            drawBezCurve(canvas, position, points, start);
             result = true;
         }
         return result;
@@ -251,25 +304,6 @@ var form = ( function(module) {
             if(s !== undefined && q.isA(s) && s.length === 2 && q.isN(s[0]) && q.isN(s[1])){
                 c = (validCurve(p))? new curve(p, s) : false;
             }
-        }
-        return c;
-    }
-
-    //-----------------------------------------------------------------------------------
-    /*
-     * PATH
-     */
-    /*
-    * returns a path object
-    *
-    * @arg Object p points
-    * @return Object | Boolean
-    */
-    function path(p){
-        var c = false;
-        if(q.isA(p) && !q.isEA(p) && q.isA(p[0])){
-            // check the array
-            c = {};
         }
         return c;
     }
@@ -437,7 +471,7 @@ var form = ( function(module) {
     module.rec = rec;
     module.crc = crc;
     module.crv = crv;
-    module.path = path;
+    module.pth = pth;
     module.poly = poly;
     module.star = star;
     module.wave = wave;

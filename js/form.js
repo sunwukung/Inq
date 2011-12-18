@@ -153,7 +153,7 @@ var form = ( function(module) {
             //create a point matrix if one isn't already defined
             points = processTransforms(circleToPoints(this.radius),this.transforms);
             position = q.isA(position) ? position : [0,0];
-            points = applyPosition(position,points);
+            points = calc.move(points, position);
             start =  [points[3][2][0],points[3][2][1]];
             drawBezCurve(canvas, position, points, start);
             result = true;
@@ -205,10 +205,8 @@ var form = ( function(module) {
             //create a point matrix if one isn't already defined
             points = processTransforms(this.points,this.transforms);
             position = q.isA(position) ? position : [0,0];
-            points = applyPosition(position,points);
-            start =  applyPosition(position, this.start);//wrong...
-            console.log(start); 
-            drawBezCurve(canvas, position, points, this.start);
+            points = calc.move(position,points);
+            drawBezCurve(canvas, position, points, [0,400]);
             result = true;
         }
         return result;
@@ -369,34 +367,7 @@ var form = ( function(module) {
         return result;
     }
 
-    /* transforms a set of co-ordinates to a new position
-     *
-     * it assumes the points array is a collection of pairs or sixes
-     *
-     * @arg Array position
-     * @arg Array points
-     * @todo make recursive
-     */ 
-    function applyPosition(position, points){
-        var newPoints = [], subPoints;
-        k.each(points,
-            function(p){
-                if(q.isN(p[0]) && p.length === 2){
-                    subPoints = k.stripe(p,
-                        function(sp){
-                            return sp + position[0];
-                        },
-                        function(sp){
-                            return sp + position[1];
-                        });
-                    newPoints.push(subPoints);
-                } else if (p.length > 2){
-                    //iterate
-                    newPoints.push(applyPosition(position,p));
-                }
-            });
-        return newPoints;
-    }
+   
         
     /**
      * path drawing functions
@@ -411,7 +382,7 @@ var form = ( function(module) {
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
             nXY = position.length;
             if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
-                points = applyPosition(position,points);
+                points = calc.move(points, position);
                 canvas.beginPath();
                 canvas.moveTo(points[0], points[1]);
                 k.each(points,function(p){

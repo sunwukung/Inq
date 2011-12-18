@@ -9,8 +9,7 @@ include 'partials/header.php';
         var sqr = form.rec(50,50),
         crc = form.crc(100),
         crv = form.crv([
-                    [[300,300],[300,300],[400,300]],
-                    [[500,300],[600,200],[600,100]]
+                    [[0,400],[200,400],[400,400]]
                     ],[300,300]);
         ctx = document.getElementById('ezl').getContext('2d'),
         n = 0;

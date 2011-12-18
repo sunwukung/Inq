@@ -96,13 +96,39 @@ var calc = ( function(module) {
         return result;
     }  
     
+    function movePoint(points, position){
+        return [
+        points[0]+position[0],
+        points[1]+position[1]
+        ];
+    }
+
+    /**
+     * move each item in points by the amount specified in position
+     *
+     * @arg Array points
+     * @arg Number n
+     * @return Array | Boolean
+     */
+    function move(points,position){
+        var result = false;
+        if(q.isA(points) && q.isA(position) && position.length === 2 && q.isN(position[0]) && q.isN(position[1])){
+            result = (points.length === 2 && q.isN(points[0]) && q.isN(points[1])) ?
+                result = movePoint(points,position) :
+                k.each(points,function(p){//recurse
+                    return move(p,position);
+                });
+        }
+        return result;
+    }
+
     /**
     * rotate point around its origin point by n degrees
-    * 
+    *
     * @arg Array point
     * @arg Number n
-    */ 
-    function rotatePoint(point,d){
+    */
+    function rotatePoint(point,degrees){
         var result = false,
         pPolar,
         pCart;
@@ -111,7 +137,7 @@ var calc = ( function(module) {
             x:point[0],
             y:point[1]
         });//map points to properties
-        pPolar.t += degreesToRadians(d);
+        pPolar.t += degreesToRadians(degrees);
         pCart = polarToCartesian(pPolar);
         result = [pCart.x,pCart.y];
         return result;
@@ -124,14 +150,14 @@ var calc = ( function(module) {
      * @arg Number n
      * @return Array | Boolean
      */ 
-        function rotate(points,d){
+    function rotate(points,degrees){
         var result = false;
-        if(q.isA(points) && !q.isEA(points) && q.isN(d)){
+        if(q.isA(points) && !q.isEA(points) && q.isN(degrees)){
             result = (points.length === 2 && q.isN(points[0])) ?
-                rotatePoint(points,d) : // xy pair
-                k.each(points,function(p){ //recurse
-                    return rotate(p,d);
-                });
+            rotatePoint(points,degrees) : // xy pair
+            k.each(points,function(p){ //recurse
+                return rotate(p,degrees);
+            });
         }
         return result;
     }
@@ -144,9 +170,7 @@ var calc = ( function(module) {
     * @return Array Z Boolean
     */
     function scalePoint(point,scale){
-        var result = false,
-        n = point.length,
-        i = 0;
+        var result = false;
         if(q.isA(point) && q.isA(scale)){
             result = k.stripe(point,
                 function(p){
@@ -161,7 +185,7 @@ var calc = ( function(module) {
     }
 
     
-   /*
+    /*
     * scale each item in points relative to its origin point
     *
     * @arg Array points
@@ -169,21 +193,19 @@ var calc = ( function(module) {
     * @return Array Z Boolean
     */
     function scale(points,scl){
-        var result = false, i = 0, len, np, newPoints = [];
+        var result = false;
         if(q.isA(points) && q.isA(scl)){
-            if(points.length === 2 && q.isN(points[0])){
-                result = scalePoint(points,scl);
-            }else{
-                // recurse
-                result = k.each(points,function(p){
+            result = (points.length === 2 && q.isN(points[0]))?
+                scalePoint(points,scl) :
+                k.each(points,function(p){
                     return scale(p,scl);
                 });
-            }
         }
         return result;
     }
     
     //REVEAL
+    module.move = move;
     module.rotate = rotate;
     module.scale = scale;
     module.radiansToDegrees = radiansToDegrees;
@@ -193,3 +215,32 @@ var calc = ( function(module) {
     return module;
     
 }(calc || {}));
+
+   /* transforms a set of co-ordinates to a new position
+     *
+     * it assumes the points array is a collection of pairs or sixes
+     *
+     * @arg Array position
+     * @arg Array points
+     * @todo make recursive
+    function move(position, points){
+        var newPoints = [], subPoints;
+        k.each(points,
+            function(p){
+                if(q.isN(p[0]) && p.length === 2){
+                    subPoints = k.stripe(p,
+                        function(sp){
+                            return sp + position[0];
+                        },
+                        function(sp){
+                            return sp + position[1];
+                        });
+                    newPoints.push(subPoints);
+                } else if (p.length > 2){
+                    //iterate
+                    newPoints.push(move(position,p));
+                }
+            });
+        return newPoints;
+    }
+     */

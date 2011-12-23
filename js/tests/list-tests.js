@@ -15,7 +15,7 @@ module('list',{
 
 test('map',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(list.map),'the list namespace contains a method called map');
+    ok(q.isF(list.map),'the k namespace contains a method called map');
     ok((list.map(this.num,this.fn) === false &&
         list.map(this.str,this.fn) === false &&
         list.map(this.obj,this.fn) === false &&
@@ -179,6 +179,10 @@ test('valid',function(){
         list.valid(this.arr,this.bool) === false &&
         list.valid(this.arr,this.obj) === false &&
         list.valid(this.arr,this.arr) === false), 'list.valid returns false unless first argument is an array and the second argument is a function');
-    ok(list.valid([1,2,3,4,5],function(i){return q.isN(i);}), 'list.valid returns true when all elements conform to the criteria expressed in fn');
-    ok(list.valid([1,2,3,4,'5'],function(i){return q.isN(i);}) === false, 'list.valid returns false when all elements conform to the criteria expressed in fn');
+    ok(list.valid([1,2,3,4,5],function(i){
+        return q.isN(i);
+    }), 'list.valid returns true when all elements conform to the criteria expressed in fn');
+    ok(list.valid([1,2,3,4,'5'],function(i){
+        return q.isN(i);
+    }) === false, 'list.valid returns false when all elements conform to the criteria expressed in fn');
 });

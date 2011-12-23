@@ -110,24 +110,40 @@ var list = ( function(module) {
     }
 
     /**
-     * returns only those elements of the array that evaluate to true when applied to f
+     * base method for use in filtering and validation
      *
      * @param Array a
      * @param Function fn
+     * @param Boolean c determines if the result should be collected
      */
-    function filter(a,fn){
-        var result = false, i = 0, len;
+    function test(a, fn, c){
+        var result = false, i = 0, e = 0, len;
         if(q.isA(a) && q.isF(fn)){
             len = a.length;
             result = [];
             while(i < len){
                 if(fn(a[i])){//if this item passes the filter criteria
                     result.push(a[i]);
+                } else {//iterate error counter
+                    e = e + 1;
                 }
-                i++;
+                i = i + 1;
             }
+        }else{
+            e = e + 1;
         }
-        return result;
+        return (c === true) ? result : e === 0;
+
+    }
+
+    /**
+     * returns only those elements of the array that evaluate to true when applied to f
+     *
+     * @param Array a
+     * @param Function fn
+     */
+    function filter(a,fn){
+        return test(a, fn, true);
     }
 
     /**
@@ -137,18 +153,7 @@ var list = ( function(module) {
     * @param Function fn
     */
     function valid(a, fn){
-        var result = false, i = 0, e = 0, len;
-        if(q.isA(a) && q.isF(fn)){
-            len = a.length;
-            while(i < len){
-                if(!fn(a[i])){//if this item passes the filter criteria
-                    e =  e+1;
-                }
-                i = i+1;
-            }
-            result = e === 0;
-        }
-        return result;
+        return test(a, fn, false);
     }
 
 

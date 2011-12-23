@@ -70,29 +70,29 @@ test('memo',function(){
     ok(q.isF(k.memo(this.fn)) === true,'memo returns a new function if provided an arguments array and a callback function');
 });
 
-test('each',function(){
+test('map',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(k.each),'the k namespace contains a method called each');
-    ok((k.each(this.num,this.fn) === false &&
-        k.each(this.str,this.fn) === false &&
-        k.each(this.obj,this.fn) === false &&
-        k.each(this.bool,this.fn) === false &&
-        k.each(this.fn,this.fn) === false &&
-        k.each(this.arr,this.str) === false &&
-        k.each(this.arr,this.num) === false &&
-        k.each(this.arr,this.bool) === false &&
-        k.each(this.arr,this.obj) === false &&
-        k.each(this.arr,this.arr) === false &&
-        q.isA(k.each(this.arr,this.fn))), 'k.each returns false unless first argument is an array and the second argument is a function');
+    ok(q.isF(k.map),'the k namespace contains a method called map');
+    ok((k.map(this.num,this.fn) === false &&
+        k.map(this.str,this.fn) === false &&
+        k.map(this.obj,this.fn) === false &&
+        k.map(this.bool,this.fn) === false &&
+        k.map(this.fn,this.fn) === false &&
+        k.map(this.arr,this.str) === false &&
+        k.map(this.arr,this.num) === false &&
+        k.map(this.arr,this.bool) === false &&
+        k.map(this.arr,this.obj) === false &&
+        k.map(this.arr,this.arr) === false &&
+        q.isA(k.map(this.arr,this.fn))), 'k.map returns false unless first argument is an array and the second argument is a function');
 
-    nA = k.each(localArr,function(v){
+    nA = k.map(localArr,function(v){
         return v + (v / 2);
     });//15,30,45,60,75
     ok((nA[0] === 15 &&
         nA[1] === 30 &&
         nA[2] === 45 &&
         nA[3] === 60 &&
-        nA[4] === 75) , 'k.each applies the function to each element of the array');
+        nA[4] === 75) , 'k.map applies the function to each element of the array');
 
 });
 
@@ -122,7 +122,7 @@ test('every',function(){
         nA[1] === 20 &&
         nA[2] === 30 &&
         nA[3] === 60 &&
-        nA[4] === 50) , 'k.every applies the function to every element of the array');
+        nA[4] === 50) , 'k.every applies the function to every element of the array that the last argument is a factor of');
 
 });
 
@@ -187,16 +187,18 @@ test('chunk',function(){
             return arr[0] + arr[1];
         },
         2
-        );//30,70,110
+        );//[30,70,110]
     arrayB = k.chunk(localArr,
         function(arr){
             return arr[0] + arr[1] + arr[2];
         },
         3
-        );//60,150
+        );//[60,150]
     ok((arrayA[0] === 30 &&
         arrayA[1] === 70 &&
-        arrayA[2] === 110) , 'k.chunk applies functions to array chunks of size defined by last argument');
+        arrayA[2] === 110 &&
+        arrayB[0] === 60 &&
+        arrayB[1] === 150) , 'k.chunk applies functions to array chunks of size defined by last argument');
 
 });
 
@@ -213,12 +215,27 @@ test('filter',function(){
         k.filter(this.arr,this.obj) === false &&
         k.filter(this.arr,this.arr) === false &&
         q.isA(k.filter(this.arr,this.fn))), 'k.filter returns false unless first argument is an array and the second argument is a function');
-    var a = [1,2,'3',4],fOne, fTwo;
+    var a = [1,2,'3',4],fOne;
     fOne = k.filter(a, function(i){
         return q.isN(i)?true:false;
     });
     ok((q.isA(fOne) && fOne.length === 3 &&
         (q.isN(fOne[0]) && q.isN(fOne[1]) && q.isN(fOne[2]))),
-        'k.filter returns only those items in the list that pass the validation function');
+    'k.filter returns only those items in the list that pass the validation function');
 });
 
+test('valid',function(){
+    ok(q.isF(k.valid), 'k namespace contains a method called valid');
+    ok((k.valid(this.num,this.fn) === false &&
+        k.valid(this.str,this.fn) === false &&
+        k.valid(this.obj,this.fn) === false &&
+        k.valid(this.bool,this.fn) === false &&
+        k.valid(this.fn,this.fn) === false &&
+        k.valid(this.arr,this.str) === false &&
+        k.valid(this.arr,this.num) === false &&
+        k.valid(this.arr,this.bool) === false &&
+        k.valid(this.arr,this.obj) === false &&
+        k.valid(this.arr,this.arr) === false), 'k.valid returns false unless first argument is an array and the second argument is a function');
+    ok(k.valid([1,2,3,4,5],function(i){return q.isN(i);}), 'k.valid returns true when all elements conform to the criteria expressed in fn');
+    ok(k.valid([1,2,3,4,'5'],function(i){return q.isN(i);}) === false, 'k.valid returns false when all elements conform to the criteria expressed in fn');
+});

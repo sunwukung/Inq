@@ -11,6 +11,7 @@
         <script type="text/javascript" src="/js/k.js"></script>
         <script type="text/javascript" src="/js/calc.js"></script>
         <script type="text/javascript" src="/js/form.js"></script>
+        <script type="text/javascript" src="/js/list.js"></script>
         <script type="text/javascript" src="/js/inq.js"></script>
         <?php echo $css; ?>
         <?php echo $js; ?>
@@ -33,6 +34,9 @@
                                 <a href="/tests.php?type=k">K Tests</a>
                             </li>
                             <li>
+                                <a href="/tests.php?type=list">List Tests</a>
+                            </li>
+                            <li>
                                 <a href="/tests.php?type=inq">Inq Tests</a>
                             </li>
                             <li>
@@ -48,4 +52,3 @@
                 <div id="content_slice">
                     <div id="content">
                         <div class="inner group">
-                        

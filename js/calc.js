@@ -104,7 +104,7 @@ var calc = ( function(module) {
     }
 
     /**
-     * move each item in points by the amount specified in position
+     * move map item in points by the amount specified in position
      *
      * @arg Array points
      * @arg Number n
@@ -115,7 +115,7 @@ var calc = ( function(module) {
         if(q.isA(points) && q.isA(position) && position.length === 2 && q.isN(position[0]) && q.isN(position[1])){
             result = (points.length === 2 && q.isN(points[0]) && q.isN(points[1])) ?
                 result = movePoint(points,position) :
-                k.each(points,function(p){//recurse
+                k.map(points,function(p){//recurse
                     return move(p,position);
                 });
         }
@@ -144,7 +144,7 @@ var calc = ( function(module) {
     }
    
     /**
-     * rotate each item in points around its origin point by n degrees
+     * rotate map item in points around its origin point by n degrees
      * 
      * @arg Array points
      * @arg Number n
@@ -155,7 +155,7 @@ var calc = ( function(module) {
         if(q.isA(points) && !q.isEA(points) && q.isN(degrees)){
             result = (points.length === 2 && q.isN(points[0])) ?
             rotatePoint(points,degrees) : // xy pair
-            k.each(points,function(p){ //recurse
+            k.map(points,function(p){ //recurse
                 return rotate(p,degrees);
             });
         }
@@ -186,7 +186,7 @@ var calc = ( function(module) {
 
     
     /*
-    * scale each item in points relative to its origin point
+    * scale map item in points relative to its origin point
     *
     * @arg Array points
     * @arg Array scale
@@ -197,7 +197,7 @@ var calc = ( function(module) {
         if(q.isA(points) && q.isA(scl)){
             result = (points.length === 2 && q.isN(points[0]))?
                 scalePoint(points,scl) :
-                k.each(points,function(p){
+                k.map(points,function(p){
                     return scale(p,scl);
                 });
         }
@@ -225,7 +225,7 @@ var calc = ( function(module) {
      * @todo make recursive
     function move(position, points){
         var newPoints = [], subPoints;
-        k.each(points,
+        k.map(points,
             function(p){
                 if(q.isN(p[0]) && p.length === 2){
                     subPoints = k.stripe(p,

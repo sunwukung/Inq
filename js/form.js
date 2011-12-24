@@ -272,9 +272,9 @@ var form = ( function(module) {
      */
     function validCurve(c){
         return (q.isA(c)) ?
-            k.valid(c, function (i){
+            list.valid(c, function (i){
                     return (q.isA(i) && i.length === 3) ?
-                    k.valid(i, function(i){
+                    list.valid(i, function(i){
                         return (q.isA(i) && i.length === 2 && q.isN(i[0]) && q.isN(i[1]));
                     }) :
                     false;
@@ -415,7 +415,7 @@ var form = ( function(module) {
                 points = calc.move(points, position);
                 canvas.beginPath();
                 canvas.moveTo(points[0], points[1]);
-                k.map(points,function(p){
+                list.map(points,function(p){
                     canvas.lineTo(p[0], p[1]);
                 })
                 canvas.fill();
@@ -440,7 +440,7 @@ var form = ( function(module) {
             q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
-            k.map(points,function(p){
+            list.map(points,function(p){
                 canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
             })
             canvas.fill();

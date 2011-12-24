@@ -38,7 +38,7 @@ var list = ( function(module) {
             n = a.length;
             while(i < n){
                 result.push(fn(a[i]));
-                i += 1;
+                i = i+1;
             }
         }
         return result;
@@ -56,9 +56,9 @@ var list = ( function(module) {
             result = [];
             n = a.length;
             while(i < n){
-                r = (i % x === 0) ?fn(a[i]):a[i];
+                r = (i % x === 0) ? fn(a[i]) : a[i];
                 result.push(r);
-                i += 1;
+                i = i+1;
             }
         }
         return result;
@@ -77,9 +77,9 @@ var list = ( function(module) {
             result = [];
             n = a.length;
             while(i < n){
-                r = ((i  % 2) === 0)? fnA(a[i]) : fnB(a[i]);
+                r = ((i  % 2) === 0) ? fnA(a[i]) : fnB(a[i]);
                 result.push(r);
-                i += 1;
+                i = i+1;
             }
         }
         return result;
@@ -102,38 +102,11 @@ var list = ( function(module) {
                 result = [];
                 while(i < len){
                     result.push(fn(a.slice(i, i+n)));
-                    i += n;
+                    i = i+n;
                 }
             }
         }
         return result;
-    }
-
-    /**
-     * base method for use in filtering and validation
-     *
-     * @param Array a
-     * @param Function fn
-     * @param Boolean c determines if the result should be collected
-     */
-    function test(a, fn, c){
-        var result = false, i = 0, e = 0, len;
-        if(q.isA(a) && q.isF(fn)){
-            len = a.length;
-            result = [];
-            while(i < len){
-                if(fn(a[i])){//if this item passes the filter criteria
-                    result.push(a[i]);
-                } else {//iterate error counter
-                    e = e + 1;
-                }
-                i = i + 1;
-            }
-        }else{
-            e = e + 1;
-        }
-        return (c === true) ? result : e === 0;
-
     }
 
     /**
@@ -143,7 +116,18 @@ var list = ( function(module) {
      * @param Function fn
      */
     function filter(a,fn){
-        return test(a, fn, true);
+        var result = false, i = 0, len;
+        if(q.isA(a) && q.isF(fn)){
+            len = a.length;
+            result = [];
+            while(i < len){
+                if(fn(a[i])){//if this item passes the filter criteria
+                    result.push(a[i]);
+                }
+                i++;
+            }
+        }
+        return result;
     }
 
     /**
@@ -153,9 +137,19 @@ var list = ( function(module) {
     * @param Function fn
     */
     function valid(a, fn){
-        return test(a, fn, false);
+        var result = false, i = 0, e = 0, len;
+        if(q.isA(a) && q.isF(fn)){
+            len = a.length;
+            while(i < len){
+                if(!fn(a[i])){//if this item passes the filter criteria
+                    e =  e+1;
+                }
+                i = i+1;
+            }
+            result = e === 0;
+        }
+        return result;
     }
-
 
     module.map = map;
     module.every = every;

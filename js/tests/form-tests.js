@@ -148,12 +148,6 @@ test('crv',function(){
         ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
 });
 
-form.validCurve([
-    [[10,10],[10,10],[10,10]],
-    [[10,10],[10,10],[10,10]],
-    [[10,10],[10,10],[10,10]],
-    [[10,10],[10,10],[10,10]]]);
-
 /*
 test('wave',function(){
     ok(typeof form.wave === 'function','form.wave is a function');

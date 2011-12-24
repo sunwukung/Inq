@@ -15,7 +15,7 @@ module('list',{
 
 test('map',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(list.map),'the k namespace contains a method called map');
+    ok(q.isF(list.map),'the list namespace contains a method called map');
     ok((list.map(this.num,this.fn) === false &&
         list.map(this.str,this.fn) === false &&
         list.map(this.obj,this.fn) === false &&
@@ -41,23 +41,23 @@ test('map',function(){
 
 test('every',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(list.every),'the k namespace contains a method called every');
+    ok(q.isF(list.every),'the list namespace contains a method called every');
     ok((list.every(this.num,this.fn, this.num) === false &&
         list.every(this.str,this.fn, this.num) === false &&
         list.every(this.obj,this.fn, this.num) === false &&
         list.every(this.bool,this.fn, this.num) === false &&
         list.every(this.fn,this.fn, this.num) === false && // end of fun
-        list.every(this.arr,this.str, this.num) === false &&
+    list.every(this.arr,this.str, this.num) === false &&
         list.every(this.arr,this.num, this.num) === false &&
         list.every(this.arr,this.bool, this.num) === false &&
         list.every(this.arr,this.obj, this.num) === false &&
         list.every(this.arr,this.arr, this.num) === false && // end of array
-        list.every(this.arr,this.fn, this.str) === false &&
+    list.every(this.arr,this.fn, this.str) === false &&
         list.every(this.arr,this.fn, this.obj) === false &&
         list.every(this.arr,this.fn, this.bool) === false &&
         list.every(this.arr,this.fn, this.arr) === false &&
         list.every(this.arr,this.fn, this.fn) === false && // end of array
-        q.isA(list.every(this.arr,this.fn,this.num))), 'list.every returns false unless first argument is an array and the second argument is a function');
+    q.isA(list.every(this.arr,this.fn,this.num))), 'list.every returns false unless first argument is an array and the second argument is a function');
     nA = list.every(localArr,function(v){
         return v + (v / 2);
     },3);//15,30,45,60,75
@@ -71,7 +71,7 @@ test('every',function(){
 
 test('stripe',function(){
     var localArr = [10,20,30,40,50],nA;
-    ok(q.isF(list.stripe),'the k namespace contains a method called stripe');
+    ok(q.isF(list.stripe),'the list namespace contains a method called stripe');
     ok((list.stripe(this.num, this.fn, this.fn) === false &&
         list.stripe(this.str, this.fn, this.fn) === false &&
         list.stripe(this.obj, this.fn, this.fn) === false &&
@@ -89,13 +89,13 @@ test('stripe',function(){
         list.stripe(this.arr,this.fn, this.arr) === false &&
         q.isA(list.stripe(this.arr,this.fn, this.fn))), 'list.stripe returns false unless first argument is an array and the second argument is a function');
     nA = list.stripe(localArr,
-        function(v){
-            return v + (v / 2);
-        },
-        function(v){
-            return v - (v / 2);
-        }
-        );//15,10,45,20,75
+    function(v){
+        return v + (v / 2);
+    },
+    function(v){
+        return v - (v / 2);
+    }
+);//15,10,45,20,75
     ok((nA[0] === 15 &&
         nA[1] === 10 &&
         nA[2] === 45 &&
@@ -106,37 +106,37 @@ test('stripe',function(){
 
 test('chunk',function(){
     var localArr = [10,20,30,40,50,60], arrayA, arrayB;
-    ok(q.isF(list.chunk),'the k namespace contains a method called chunk');
+    ok(q.isF(list.chunk),'the list namespace contains a method called chunk');
     ok((list.chunk(this.num, this.fn, this.fn) === false &&
         list.chunk(this.str, this.fn, this.fn) === false &&
         list.chunk(this.obj, this.fn, this.fn) === false &&
         list.chunk(this.bool, this.fn, this.fn) === false &&
         list.chunk(this.fn, this.fn, this.fn) === false &&//false on bad 1st
-        list.chunk(this.arr, this.str, this.fn) === false &&
+    list.chunk(this.arr, this.str, this.fn) === false &&
         list.chunk(this.arr, this.num, this.fn) === false &&
         list.chunk(this.arr, this.bool, this.fn) === false &&
         list.chunk(this.arr, this.obj, this.fn) === false &&
         list.chunk(this.arr, this.arr, this.fn) === false &&//false on bad 2nd
-        list.chunk(this.arr, this.fn, this.str) === false &&
+    list.chunk(this.arr, this.fn, this.str) === false &&
         list.chunk(this.arr, this.fn, this.fn) === false &&
         list.chunk(this.arr, this.fn, this.bool) === false &&
         list.chunk(this.arr, this.fn, this.obj) === false &&
         list.chunk(this.arr, this.fn, this.arr) === false &&//false on bad 3rd
-        q.isA(list.chunk(localArr,this.fn, 2))), 'list.chunk returns false unless first argument is an array, the second argument is a function and the last argument is an integer');
+    q.isA(list.chunk(localArr,this.fn, 2))), 'list.chunk returns false unless first argument is an array, the second argument is a function and the last argument is an integer');
     ok(list.chunk(this.arr,this.fn, 7) === false, 'list.chunk returns false if number of elements in third argument is not a factor of first.length');
     //output test
     arrayA = list.chunk(localArr,
-        function(arr){
-            return arr[0] + arr[1];
-        },
-        2
-        );//[30,70,110]
+    function(arr){
+        return arr[0] + arr[1];
+    },
+    2
+);//[30,70,110]
     arrayB = list.chunk(localArr,
-        function(arr){
-            return arr[0] + arr[1] + arr[2];
-        },
-        3
-        );//[60,150]
+    function(arr){
+        return arr[0] + arr[1] + arr[2];
+    },
+    3
+);//[60,150]
     ok((arrayA[0] === 30 &&
         arrayA[1] === 70 &&
         arrayA[2] === 110 &&
@@ -146,7 +146,7 @@ test('chunk',function(){
 });
 
 test('filter',function(){
-    ok(q.isF(list.filter), 'k namespace contains a method called filter');
+    ok(q.isF(list.filter), 'list namespace contains a method called filter');
     ok((list.filter(this.num,this.fn) === false &&
         list.filter(this.str,this.fn) === false &&
         list.filter(this.obj,this.fn) === false &&
@@ -168,7 +168,7 @@ test('filter',function(){
 });
 
 test('valid',function(){
-    ok(q.isF(list.valid), 'k namespace contains a method called valid');
+    ok(q.isF(list.valid), 'list namespace contains a method called valid');
     ok((list.valid(this.num,this.fn) === false &&
         list.valid(this.str,this.fn) === false &&
         list.valid(this.obj,this.fn) === false &&
@@ -185,4 +185,25 @@ test('valid',function(){
     ok(list.valid([1,2,3,4,'5'],function(i){
         return q.isN(i);
     }) === false, 'list.valid returns false when all elements conform to the criteria expressed in fn');
+});
+
+test('make', function(){
+    ok(q.isF(list.make), 'list namespace contains function:build');
+    ok((list.make(this.str) === false &&
+        list.make(this.bool) === false &&
+        list.make(this.obj) === false &&
+        list.make(this.arr) === false &&
+        list.make(this.num) === false &&
+        q.isA(list.make(5,this.fn))), 'list.build returns false unless: list.build(Number, Function)');
+    var testList = list.make(5, function(i, n){
+        return 10 * i;
+    });
+    console.log(testList);
+    ok((q.isA(testList) &&
+        testList.length === 5 &&
+        q.isN(testList[0]) &&
+        q.isN(testList[1]) &&
+        q.isN(testList[2]) &&
+        q.isN(testList[3]) &&
+        q.isN(testList[4])), 'list.build returns an array of length n as expressed by fn');
 });

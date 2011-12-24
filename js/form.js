@@ -25,13 +25,16 @@ var form = ( function(module) {
 
     var form, rectangle, circle, path, curve;
 
+    // CORE FUNCTIONALITY ------------------------------------------------------
+    /**
+     * @param Array p
+     */
     function validPath(p){
         var result = false;
         if(q.isA(p)){
             result = list.valid(p,function(i){
                 return q.isN(i[0]) && q.isN(i[1]);
             });
-            console.log(result);
         }
         return result;
     }
@@ -53,6 +56,130 @@ var form = ( function(module) {
         }) :
         false;
     }
+
+    /*
+     * converts rectangle object to XY list
+     *
+     * @param Object r rectangle
+     * @return Array
+     */
+    function rectangleToPoints (r) {
+        var a, b, c, d, e, hW, hY;
+        hW = r.w / 2;
+        hY = r.h / 2;
+        a = [-hW, -hY];
+        b = [hW, -hY];
+        c = [hW, hY];
+        d = [-hW, hY];
+        e = [-hW, -hY];
+        return [a, b, c, d, e];
+    }
+
+    /**
+     * create a quadratic curve representing a circle
+     *
+     * @param Number r radius
+     */
+    function circleToPoints(r) {
+        var a, b, c, d, x = 0, y = 0,
+        o = Math.floor(r / 1.85),//offset
+        result = false;
+        if(q.isN(r)){
+            //offset
+            a = [[x + o, -r], [x + r, y - o], [x + r, y]];
+            b = [[x + r, y + o], [x + o, y + r], [x, y + r]];
+            c = [[x - o, y + r], [x - r, y + o], [x - r, y]];
+            d = [[x - r, -o], [x - o, -r], [x, -r]];
+            result = [a,b,c,d];
+        }
+        return result;
+    }
+
+    /**
+     *
+     *@param Number n number of points
+     *@param radius radius of polygon
+     */
+    function polygonToPoints(n, r){
+        var inc = 360 / n, points = [];
+        points = list.make(n, function(i, n){
+            var j =  inc * (i+1), 
+            d = calc.degreesToRadians(d),
+            p2c = calc.polarToCartesian({
+                r:r,
+                t:j
+            });
+            return [p2c.x, p2c.y];
+        });
+        console.log(points);
+        return points;
+    }
+
+    /**
+     * path drawing functions
+     *
+     * @param CanvasRenderingContext2D canvas object
+     * @param array position
+     * @param array points
+     */
+    function drawPath(canvas, position, points) {
+        var result = false, i, n, nXY;
+        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
+            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
+            nXY = position.length;
+            if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
+                points = calc.move(points, position);
+                canvas.beginPath();
+                canvas.moveTo(points[0], points[1]);
+                list.map(points,function(p){
+                    canvas.lineTo(p[0], p[1]);
+                })
+                canvas.fill();
+                canvas.stroke();
+                canvas.closePath();
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * curve drawing functions
+     *
+     * @param CanvasRenderingContext2D canvas object
+     * @param array position
+     * @param array points
+     */
+    function drawBezCurve(canvas, position, points, start){
+        var result = false;
+        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
+            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
+            canvas.beginPath();
+            canvas.moveTo(start[0],start[1]);
+            list.map(points,function(p){
+                canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
+            })
+            canvas.fill();
+            canvas.stroke();
+            canvas.closePath();
+            result = true;
+        }
+        return result;
+    }
+
+    function processTransforms(points, transforms){
+        if((q.isA(points) && points.length > 0) && (q.isA(transforms) && transforms.length > 0)){
+            //get the next transformation
+            var t = transforms[0]['type'],
+            v = transforms[0]['value'];
+            points = calc[t](points,v);
+            return processTransforms(points,transforms.slice(1));
+        } else {
+            return points;
+        }
+    }
+
+    // FORM --------------------------------------------------------------------
     
     /*
      * base form object from which all forms are derived
@@ -94,11 +221,8 @@ var form = ( function(module) {
         return result;
     };
     
-    //-----------------------------------------------------------------------------------
-
+    // RECTANGLE----------------------------------------------------------------
     /*
-     * RECTANGLE
-     *
      * constructor method for rectangles
      * private implementation of form.rec
      *
@@ -117,7 +241,8 @@ var form = ( function(module) {
     k.inherit(rectangle,form);
 
     /*
-     *
+     * @param CanvasRenderingContext2D canvas object
+     * @param Array position
      */
     rectangle.prototype.draw = function(canvas, position){
         var result = false, 
@@ -146,12 +271,8 @@ var form = ( function(module) {
         }        
         return result;
     }
-    
-    //-----------------------------------------------------------------------------------
-
+    // CIRCLE-------------------------------------------------------------------
     /*
-     * CIRCLE
-     *
      * constructor method for circles
      * private implementation of form.crc
      *
@@ -171,7 +292,8 @@ var form = ( function(module) {
     k.inherit(circle,form);
 
     /*
-     *
+     * @param CanvasRenderingContext2D canvas object
+     * @param Array position
      */
     circle.prototype.draw = function(canvas, position){
         var result = false,
@@ -202,14 +324,8 @@ var form = ( function(module) {
         }
         return result;
     }
-    //-----------------------------------------------------------------------------------
+    // PATH --------------------------------------------------------------------
     /*
-     * PATH
-     */
-
-    /*
-     * PATH
-     *
      * constructor method for (bezier) curves
      * private implementation of form.crv
      *
@@ -264,18 +380,13 @@ var form = ( function(module) {
             // validate the path geometry
             result = new path(points, start);
         }
-        */
+         */
         return result;
     }
     
-    //-----------------------------------------------------------------------------------
-    /*
-     * CURVE
-     */
+    // CURVE--------------------------------------------------------------------
 
     /*
-     * CURVE
-     *
      * constructor method for (bezier) curves
      * private implementation of form.crv
      *
@@ -307,13 +418,13 @@ var form = ( function(module) {
     }
 
     /*
-         * returns a curve object
-         *
-         * @arg Array p points
-         * @arg Array s start
-         * @arg Boolean v
-         * @return Object | Boolean
-         */
+     * returns a curve object
+     *
+     * @arg Array p points
+     * @arg Array s start
+     * @arg Boolean v
+     * @return Object | Boolean
+     */
     function crv(p,s,v){
         var result = false;
         if(q.isA(p)){
@@ -327,33 +438,45 @@ var form = ( function(module) {
         }
         return result;
     }
-    //-----------------------------------------------------------------------------------
+    // POLY --------------------------------------------------------------------
+
     /*
-         * POLY
-         */
+     * constructor method for polygons
+     * private implementation of form.poly
+     *
+     * @arg Number n
+     * @arg Number radius
+     */
+    polygon = function(n, radius){
+        form.apply(this,arguments);
+        this.n = n;
+        this.radius = radius;
+        this.points = polygonToPoints(n, radius);
+        this.start = this.points[this.points.length - 1];
+    };
+
+    // apply parent prototype before augmenting the child object
+    k.inherit(polygon, form);
     /*
-         * returns a path object
-         *
-         * @arg Array p points
-         * @return Object | Boolean
-         */
-    function poly(p){
+     * returns a path object
+     *
+     * @arg Array p points
+     * @return Object | Boolean
+     */
+    function poly(p, r){
         var c = false;
-        if(q.isA(p)){
-            c = {};
+        if(q.isN(p) && q.isN(r)){
+            c = new polygon(p, r);
         }
         return c;
     }
-    //-----------------------------------------------------------------------------------
+    // STAR --------------------------------------------------------------------
     /*
-         * STAR
-         */
-    /*
-         * returns a path object
-         *
-         * @arg Object p points
-         * @return Object | Boolean
-         */
+     * returns a path object
+     *
+     * @arg Object p points
+     * @return Object | Boolean
+     */
     function star(p){
         var c = false;
         if(q.isA(p)){
@@ -362,15 +485,13 @@ var form = ( function(module) {
         return c;
     }
 
+    // WAVE --------------------------------------------------------------------
     /*
-         * STAR
-         */
-    /*
-         * returns a wave object
-         *
-         * @arg Object p points
-         * @return Object | Boolean
-         */
+     * returns a wave object
+     *
+     * @arg Object p points
+     * @return Object | Boolean
+     */
     function wave(p){
         var c = false;
         if(q.isA(p)){
@@ -380,112 +501,7 @@ var form = ( function(module) {
     }
 
     //-----------------------------------------------------------------------------------
-    /*
-         * UTILITIES
-         */
-    /*
-         * converts rectangle object to XY list
-         *
-         * @param Object r rectangle
-         * @return Array
-         */
-    function rectangleToPoints (r) {
-        var a, b, c, d, e, hW, hY;
-        hW = r.w / 2;
-        hY = r.h / 2;
-        a = [-hW, -hY];
-        b = [hW, -hY];
-        c = [hW, hY];
-        d = [-hW, hY];
-        e = [-hW, -hY];
-        return [a, b, c, d, e];
-    }
-    
-    /**
-         * create a quadratic curve representing a circle
-         *
-         * @param Number r radius
-         */
-    function circleToPoints(r) {
-        var a, b, c, d, x = 0, y = 0,
-        o = Math.floor(r / 1.85),//offset
-        result = false;
-        if(q.isN(r)){
-            //offset
-            a = [[x + o, -r], [x + r, y - o], [x + r, y]];
-            b = [[x + r, y + o], [x + o, y + r], [x, y + r]];
-            c = [[x - o, y + r], [x - r, y + o], [x - r, y]];
-            d = [[x - r, -o], [x - o, -r], [x, -r]];
-            result = [a,b,c,d];
-        }
-        return result;
-    }
 
-   
-        
-    /**
-         * path drawing functions
-         *
-         * @param CanvasRenderingContext2D canvas object
-         * @param array position
-         * @param array points
-         */
-    function drawPath(canvas, position, points) {
-        var result = false, i, n, nXY;
-        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
-            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-            nXY = position.length;
-            if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
-                points = calc.move(points, position);
-                canvas.beginPath();
-                canvas.moveTo(points[0], points[1]);
-                list.map(points,function(p){
-                    canvas.lineTo(p[0], p[1]);
-                })
-                canvas.fill();
-                canvas.stroke();
-                canvas.closePath();
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    /**
-         * curve drawing functions
-         *
-         * @param CanvasRenderingContext2D canvas object
-         * @param array position
-         * @param array points
-         */
-    function drawBezCurve(canvas, position, points, start){
-        var result = false;
-        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
-            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-            canvas.beginPath();
-            canvas.moveTo(start[0],start[1]);
-            list.map(points,function(p){
-                canvas.bezierCurveTo( p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1] );
-            })
-            canvas.fill();
-            canvas.stroke();
-            canvas.closePath();
-            result = true;
-        }
-        return result;
-    }
-
-    function processTransforms(points, transforms){
-        if((q.isA(points) && points.length > 0) && (q.isA(transforms) && transforms.length > 0)){
-            //get the next transformation
-            var t = transforms[0]['type'],
-            v = transforms[0]['value'];
-            points = calc[t](points,v);
-            return processTransforms(points,transforms.slice(1));
-        } else {
-            return points;
-        }
-    }
     
     // REVEAL
     module.rec = rec;

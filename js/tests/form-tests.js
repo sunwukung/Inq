@@ -9,12 +9,6 @@ module('form',{
             a : form.crc(10),
             b : form.rec(20)
         };
-        // this.paths = {
-        //     a : form.path([[10,30],[20,10],[30,30],[40,10]])
-        // },
-        this.curves = {
-
-        };
         this.str = 'foo';
         this.num = 123;
         this.arr = [1,2,3];
@@ -164,7 +158,6 @@ test('pth',function(){
     var testPth,
     goodPoints = [[10,10],[30,10],[20,10],[10,20]],
     badPoints = [[10,10],[30,10],[20,10],['10',20]];
-
     ok(typeof form.pth === 'function','form.pth is a function');
     ok((form.pth(this.str) === false &&
         form.pth(this.num) === false &&
@@ -186,6 +179,17 @@ test('pth',function(){
     ok((testPth.transforms[0]['type']  === 'scale' && q.isA(testPth.transforms[0]['value']) && testPth.transforms[0]['value'][0] === 10 &&
         testPth.transforms[1]['type']  === 'scale' && q.isA(testPth.transforms[1]['value']) && testPth.transforms[1]['value'][0] === 20
         ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
+});
+
+test('poly',function(){
+    ok(typeof form.poly === 'function','form.poly is a function');
+    ok((form.poly(this.str) === false &&
+        form.poly(this.obj) === false &&
+        form.poly(this.bool) === false &&
+        form.poly(this.fn) === false &&
+        form.poly(this.arr) === false),
+    'form.poly returns false on bad arguments');
+    ok(form.poly(5,10),'form.poly returns an object of type poly when passed numeric points and radius values');
 });
 
 /*

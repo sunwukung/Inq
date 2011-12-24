@@ -24,7 +24,36 @@
 var form = ( function(module) {
 
     var form, rectangle, circle, path, curve;
-       
+
+    function validPath(p){
+        var result = false;
+        if(q.isA(p)){
+            result = list.valid(p,function(i){
+                return q.isN(i[0]) && q.isN(i[1]);
+            });
+            console.log(result);
+        }
+        return result;
+    }
+
+    /**
+     * validates Bezier curve co-ordinate list
+     *
+     * @param Array c
+     * @return Boolean
+     */
+    function validCurve(c){
+        return (q.isA(c)) ?
+        list.valid(c, function (i){
+            return (q.isA(i) && i.length === 3) ?
+            list.valid(i, function(i){
+                return (q.isA(i) && i.length === 2 && q.isN(i[0]) && q.isN(i[1]));
+            }) :
+            false;
+        }) :
+        false;
+    }
+    
     /*
      * base form object from which all forms are derived
      */
@@ -217,13 +246,26 @@ var form = ( function(module) {
      * @arg Object p points
      * @return Object | Boolean
      */
-    function pth(points,start){
-        var p = false;
-        if(q.isA(points) && !q.isEA(points) && q.isA(points[0])){
-            // validate the path geometry
-            p = new path(points,start);
+    function pth(points, start, v){
+        var result = false;
+
+        if(q.isA(points)){
+            if(start !== undefined && q.isA(start) && start.length === 2 && q.isN(start[0]) && q.isN(start[1])){
+                result = v ?
+                (validPath(points)) ?
+                new path(points, start) :
+                false :
+                new path(points, start) ;
+            }
         }
-        return p;
+
+        /*
+        if(q.isA(points) && !q.isEA(points)){
+            // validate the path geometry
+            result = new path(points, start);
+        }
+        */
+        return result;
     }
     
     //-----------------------------------------------------------------------------------
@@ -264,24 +306,6 @@ var form = ( function(module) {
         return result;
     }
 
-    /**
-     * validates Bezier curve co-ordinate list
-     *
-     * @param Array c
-     * @return Boolean
-     */
-    function validCurve(c){
-        return (q.isA(c)) ?
-            list.valid(c, function (i){
-                    return (q.isA(i) && i.length === 3) ?
-                    list.valid(i, function(i){
-                        return (q.isA(i) && i.length === 2 && q.isN(i[0]) && q.isN(i[1]));
-                    }) :
-                    false;
-                }) :
-            false;
-    }
-
     /*
          * returns a curve object
          *
@@ -291,17 +315,17 @@ var form = ( function(module) {
          * @return Object | Boolean
          */
     function crv(p,s,v){
-        var c = false;
+        var result = false;
         if(q.isA(p)){
             if(s !== undefined && q.isA(s) && s.length === 2 && q.isN(s[0]) && q.isN(s[1])){
-                c = v ?
+                result = v ?
                 (validCurve(p)) ?
                 new curve(p, s) :
                 false :
                 new curve(p, s) ;
             }
         }
-        return c;
+        return result;
     }
     //-----------------------------------------------------------------------------------
     /*

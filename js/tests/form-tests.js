@@ -4,17 +4,27 @@ module('form',{
         this.rectangles = {
             a : form.rec(10,10),
             b : form.rec(20,20)            
-        },
+        };
         this.circles = {
             a : form.crc(10),
             b : form.rec(20)
-        },
+        };
         // this.paths = {
         //     a : form.path([[10,30],[20,10],[30,30],[40,10]])
         // },
         this.curves = {
 
-        }
+        };
+        this.str = 'foo';
+        this.num = 123;
+        this.arr = [1,2,3];
+        this.boo = true;
+        this.obj = {
+            foo:'bar'
+        };
+        this.fn = function(){
+            return 'foo';
+        };
     },
     teardown : function(){
         this.canvas = document.createElement('canvas').getContext('2d');
@@ -91,6 +101,7 @@ test('rec.scale',function(){
 });
 
 
+// CIRCLE ---------------------------------------------------------------------
 test('crc',function(){
     var c = this.circles;   
     ok(typeof form.crc === 'function','form.crc is a function');
@@ -111,7 +122,7 @@ test('crc',function(){
 });
 
 test('crv',function(){
-    var t,
+    var testCrv,
     goodPoints = [
     [[10,10],[30,10],[20,10]],
     [[10,20],[30,20],[20,20]],
@@ -145,6 +156,35 @@ test('crv',function(){
     testCrv.scale(20,20);
     ok((testCrv.transforms[0]['type']  === 'scale' && q.isA(testCrv.transforms[0]['value']) && testCrv.transforms[0]['value'][0] === 10 &&
         testCrv.transforms[1]['type']  === 'scale' && q.isA(testCrv.transforms[1]['value']) && testCrv.transforms[1]['value'][0] === 20
+        ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
+});
+
+// PATH ---------------------------------------------------------------------
+test('pth',function(){
+    var testPth,
+    goodPoints = [[10,10],[30,10],[20,10],[10,20]],
+    badPoints = [[10,10],[30,10],[20,10],['10',20]];
+
+    ok(typeof form.pth === 'function','form.pth is a function');
+    ok((form.pth(this.str) === false &&
+        form.pth(this.num) === false &&
+        form.pth(this.obj) === false &&
+        form.pth(this.bool) === false &&
+        form.pth(this.fn) === false &&
+        q.isO(form.pth(badPoints,[0,0],true)) === false && //trigger strict validation of path
+        q.isO(form.pth(goodPoints,[0,'0'])) === false),
+    'form.pth returns false on bad arguments');
+
+
+    ok(q.isO(form.pth(goodPoints,[10,10])),'form.pth returns a curve object if provided with a list of arrays containing three pairs of xy co-ordinates, followed by a single xy pair array');
+
+    testPth = form.pth(goodPoints,[10,10]);
+    testPth.transforms = [];
+    testPth.scale(10,10);
+    ok(testPth.transforms[0]['type']  === 'scale','calling the scale method puts an object with a type property "scale" into the transforms array');
+    testPth.scale(20,20);
+    ok((testPth.transforms[0]['type']  === 'scale' && q.isA(testPth.transforms[0]['value']) && testPth.transforms[0]['value'][0] === 10 &&
+        testPth.transforms[1]['type']  === 'scale' && q.isA(testPth.transforms[1]['value']) && testPth.transforms[1]['value'][0] === 20
         ),'calling the scale method more than once puts additional objects with a type property "scale" into the "transforms" array');
 });
 

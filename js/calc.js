@@ -35,7 +35,6 @@ var calc = ( function(module) {
         var r = false;
         if(q.isN(d)){
             r = d * (Math.PI/180);
-            r = (q.isN(r)) ? Number(r.toFixed(3)) : false;
         }
         return r;
     }
@@ -51,7 +50,6 @@ var calc = ( function(module) {
         var d = false;
         if(q.isN(r)){
             d = r * (180/ Math.PI);
-            d = (q.isN(d)) ? Number(d.toFixed(3)) : false;
         }
         return d;
     }

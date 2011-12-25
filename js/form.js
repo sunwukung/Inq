@@ -103,7 +103,7 @@ var form = ( function(module) {
     function polygonToPoints(n, r){
         var inc = 360 / n, points = [];
         points = list.make(n, function(i, n){
-            var j =  i === 0 ? 0 : inc * i,
+            var j =  i === 0 ? -90 : -90 + (inc * i),//rotate poly through -90
             d = calc.degreesToRadians(j),
             p2c = calc.polarToCartesian({
                 r:r,
@@ -122,25 +122,24 @@ var form = ( function(module) {
      * @param array position
      * @param array points
      */
-    function drawPath(canvas, position, points, start) {
-        var result = false, nXY;
-        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
-            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
-            nXY = position.length;
-            if(nXY == 2  && q.isN(position[0]) && q.isN(position[1])){
-                points = calc.move(points, position);
-                canvas.beginPath();
-                start = q.isA(start) ? start : [position[0],position[1]];
-                start = calc.move(start, position);
-                canvas.moveTo(start[0],start[1]);
-                list.map(points,function(p){
-                    canvas.lineTo(p[0], p[1]);
-                })
-                canvas.fill();
-                canvas.stroke();
-                canvas.closePath();
-                result = true;
-            }
+    function drawPath(canvas, points, position) {
+        var result = false;
+        if(canvas.toString() === '[object CanvasRenderingContext2D]') {
+
+            //apply position
+            position = q.isA(position) ? position : [0,0];
+            points = calc.move(points, position);
+
+            //draw path
+            canvas.beginPath();
+            canvas.moveTo(points[0],points[1]);
+            list.map(points,function(p){
+                canvas.lineTo(p[0], p[1]);
+            })
+            canvas.fill();
+            canvas.stroke();
+            canvas.closePath();
+            result = true;
         }
         return result;
     }
@@ -251,9 +250,9 @@ var form = ( function(module) {
         points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
-            points = processTransforms(rectangleToPoints(this),this.transforms);
-            position = q.isA(position) ? position : [0,0];
-            drawPath(canvas, position, points, [points[0],points[1]]);
+            points = rectangleToPoints(this);
+            points = processTransforms(points,this.transforms);
+            drawPath(canvas, points, position);
             result = true;
         }
         return result;
@@ -333,10 +332,9 @@ var form = ( function(module) {
      *
      * @arg Number radius
      */
-    path = function(p, s){
+    path = function(p){
         form.apply(this,arguments);
         this.points = p;
-        this.start = s;
     };
 
     // apply parent prototype before augmenting the child object
@@ -344,15 +342,11 @@ var form = ( function(module) {
 
     path.prototype.draw = function(canvas, position){
         var result = false,
-        points,
-        start;
+        points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //create a point matrix if one isn't already defined
             points = processTransforms(this.points,this.transforms);
-            position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-            start = calc.move(this.start, position);
-            drawPath(canvas, position, points, start);
+            drawPath(canvas, points, position);
             result = true;
         }
         return result;
@@ -364,25 +358,15 @@ var form = ( function(module) {
      * @arg Object p points
      * @return Object | Boolean
      */
-    function pth(points, start, v){
+    function pth(points, v){
         var result = false;
-
         if(q.isA(points)){
-            if(start !== undefined && q.isA(start) && start.length === 2 && q.isN(start[0]) && q.isN(start[1])){
-                result = v ?
-                (validPath(points)) ?
-                new path(points, start) :
-                false :
-                new path(points, start) ;
-            }
+            result = v ?
+            (validPath(points)) ?
+            new path(points) :
+            false :
+            new path(points) ;
         }
-
-        /*
-        if(q.isA(points) && !q.isEA(points)){
-            // validate the path geometry
-            result = new path(points, start);
-        }
-         */
         return result;
     }
     
@@ -453,8 +437,6 @@ var form = ( function(module) {
         form.apply(this,arguments);
         this.n = n;
         this.radius = radius;
-        this.points = polygonToPoints(n, radius);
-        this.start = this.points[0];
     };
 
     // apply parent prototype before augmenting the child object
@@ -465,12 +447,10 @@ var form = ( function(module) {
         points,
         start;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //create a point matrix if one isn't already defined
-            points = processTransforms(this.points,this.transforms);
-            position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-            start = calc.move(this.start, position);
-            drawPath(canvas, position, points, start);
+            //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
+            points = polygonToPoints(this.n, this.radius);
+            points = processTransforms(points,this.transforms);
+            drawPath(canvas, points, position);
             result = true;
         }
         return result;

@@ -8,29 +8,33 @@ include 'partials/header.php';
     (function(){
         var sqr = form.rec(50,50),
         crc = form.crc(100),
-        pth = form.pth([[200,200],[300,100],[400,200],[500,100]],[100,100]),
+        pth = form.pth([[200,200],[300,100],[400,200],[500,100]]),
         crv = form.crv([
             [[100,200],[200,400],[400,400]]
         ],[100,100])
-        poly=form.poly(5,100);
+        poly=form.poly(5,50);
         ctx = document.getElementById('ezl').getContext('2d'),
-        n = 0;
+
         ctx.fillStyle = 'rgba(0,0,0,0)';
         sqr.scale(1,2);
         sqr.rotate(-45);
-        crc.scale(1,2);
-        crc.rotate(45);
         pth.scale(1,2);
         pth.rotate(45);
+        /*
         crv.scale(1,2);
         crv.rotate(45);
-       // poly.scale(2,1);
-      //  poly.rotate(45);
-        sqr.draw(ctx,[200,200]);
+         */
+        poly.scale(2,1);
+        poly.rotate(45);
+        crc.scale(1,1.5);
+        crc.rotate(45);
         crc.draw(ctx,[200,200]);
         crv.draw(ctx,[200,200]);
-        pth.draw(ctx,200,200);
-        poly.draw(ctx,[300,150]);
+        sqr.draw(ctx,[200,200]);
+        pth.draw(ctx,[200,200]);
+        poly.draw(ctx,[600,200]);
+       // ctx.arc(100,0,2,0, 360);
+       // ctx.stroke();
 
 
         /*

@@ -189,7 +189,7 @@ test('poly',function(){
         form.poly(this.fn) === false &&
         form.poly(this.arr) === false),
     'form.poly returns false on bad arguments');
-    ok(form.poly(5,10),'form.poly returns an object of type poly when passed numeric points and radius values');
+    ok(form.poly(5,10),'form.poly returns an object of type "poly" when passed numeric points and radius values');
 });
 
 /*

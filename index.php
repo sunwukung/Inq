@@ -10,8 +10,9 @@ include 'partials/header.php';
         crc = form.crc(100),
         pth = form.pth([[200,200],[300,100],[400,200],[500,100]],[100,100]),
         crv = form.crv([
-                    [[100,200],[200,400],[400,400]]
-                    ],[100,100]);
+            [[100,200],[200,400],[400,400]]
+        ],[100,100])
+        poly=form.poly(5,100);
         ctx = document.getElementById('ezl').getContext('2d'),
         n = 0;
         ctx.fillStyle = 'rgba(0,0,0,0)';
@@ -23,10 +24,15 @@ include 'partials/header.php';
         pth.rotate(45);
         crv.scale(1,2);
         crv.rotate(45);
+       // poly.scale(2,1);
+      //  poly.rotate(45);
         sqr.draw(ctx,[200,200]);
         crc.draw(ctx,[200,200]);
         crv.draw(ctx,[200,200]);
         pth.draw(ctx,200,200);
+        poly.draw(ctx,[300,150]);
+
+
         /*
         function animated() {
             if(n < 360) {

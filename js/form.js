@@ -477,12 +477,27 @@ var form = ( function(module) {
      * @arg Object p points
      * @return Object | Boolean
      */
-    function star(p){
-        var c = false;
-        if(q.isA(p)){
-            c = {};
+    function stella(n, r1, r2){
+        form.apply(this,arguments);
+        this.n = n;
+        this.r1 = r1;
+        this.r2 = r2;
+    }
+
+    // apply parent prototype before augmenting the child object
+    k.inherit(stella, form);
+
+    /**
+     * @param Number n - minimum 3
+     * @param Number r1
+     * @param Number r2
+     */
+    function star(n, r1, r2){
+        var result = false;
+        if(q.isN(n) && (n >= 3) && q.isN(r1) && q.isN(r2)){
+            result = new stella(n, r1, r2);
         }
-        return c;
+        return result;
     }
 
     // WAVE --------------------------------------------------------------------

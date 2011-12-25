@@ -151,10 +151,13 @@ var form = ( function(module) {
      * @param array position
      * @param array points
      */
-    function drawBezCurve(canvas, position, points, start){
+    function drawBezCurve(canvas, points, start, position){
         var result = false;
-        if((canvas.toString() === '[object CanvasRenderingContext2D]') &&
-            q.isA(position) && (q.isA(points) && !q.isEA(points) )) {
+        if(canvas.toString() === '[object CanvasRenderingContext2D]') {
+            position = q.isA(position) ? position : [0,0];
+            points = calc.move(points, position);
+            start = calc.move(start, position);
+            console.log(points);
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
             list.map(points,function(p){
@@ -306,7 +309,7 @@ var form = ( function(module) {
             position = q.isA(position) ? position : [0,0];
             points = calc.move(points, position);
             start =  [points[3][2][0],points[3][2][1]];
-            drawBezCurve(canvas, position, points, start);
+            drawBezCurve(canvas, points, start, position);
             result = true;
         }
         return result;
@@ -395,9 +398,7 @@ var form = ( function(module) {
             //create a point matrix if one isn't already defined
             points = processTransforms(this.points,this.transforms);
             position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-            start = calc.move(this.start, position);
-            drawBezCurve(canvas, position, points, start);
+            drawBezCurve(canvas, points, this.start, position);
             result = true;
         }
         return result;

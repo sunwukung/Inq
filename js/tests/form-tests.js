@@ -164,8 +164,7 @@ test('pth',function(){
         form.pth(this.obj) === false &&
         form.pth(this.bool) === false &&
         form.pth(this.fn) === false &&
-        q.isO(form.pth(badPoints,[0,0],true)) === false && //trigger strict validation of path
-        q.isO(form.pth(goodPoints,[0,'0'])) === false),
+        q.isO(form.pth(badPoints,true)) === false),
     'form.pth returns false on bad arguments');
 
 

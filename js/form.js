@@ -445,8 +445,7 @@ var form = ( function(module) {
 
     polygon.prototype.draw = function(canvas, position){
         var result = false,
-        points,
-        start;
+        points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
             points = polygonToPoints(this.n, this.radius);
@@ -480,12 +479,28 @@ var form = ( function(module) {
     function stella(n, r1, r2){
         form.apply(this,arguments);
         this.n = n;
-        this.r1 = r1;
-        this.r2 = r2;
+        this.radius1 = r1;
+        this.radius2 = r2;
     }
 
     // apply parent prototype before augmenting the child object
     k.inherit(stella, form);
+
+    stella.prototype.draw = function(canvas, position){
+        var result = false,
+        points;
+        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
+            //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
+            pointsA = polygonToPoints(this.n, this.radius1);
+            pointsB = polygonToPoints(this.n, this.radius2);
+            pointsB = calc.rotate(pointsB, (360 / this.n) / 2 );
+            points = list.mix(pointsA, pointsB);
+            points = processTransforms(points,this.transforms);
+            drawPath(canvas, points, position);
+            result = true;
+        }
+        return result;
+    };
 
     /**
      * @param Number n - minimum 3
@@ -493,11 +508,11 @@ var form = ( function(module) {
      * @param Number r2
      */
     function star(n, r1, r2){
-        var result = false;
+        var s = false;
         if(q.isN(n) && (n >= 3) && q.isN(r1) && q.isN(r2)){
-            result = new stella(n, r1, r2);
+            s = new stella(n, r1, r2);
         }
-        return result;
+        return s;
     }
 
     // WAVE --------------------------------------------------------------------

@@ -47,17 +47,17 @@ test('every',function(){
         list.every(this.obj,this.fn, this.num) === false &&
         list.every(this.bool,this.fn, this.num) === false &&
         list.every(this.fn,this.fn, this.num) === false && // end of fun
-    list.every(this.arr,this.str, this.num) === false &&
+        list.every(this.arr,this.str, this.num) === false &&
         list.every(this.arr,this.num, this.num) === false &&
         list.every(this.arr,this.bool, this.num) === false &&
         list.every(this.arr,this.obj, this.num) === false &&
         list.every(this.arr,this.arr, this.num) === false && // end of array
-    list.every(this.arr,this.fn, this.str) === false &&
+        list.every(this.arr,this.fn, this.str) === false &&
         list.every(this.arr,this.fn, this.obj) === false &&
         list.every(this.arr,this.fn, this.bool) === false &&
         list.every(this.arr,this.fn, this.arr) === false &&
         list.every(this.arr,this.fn, this.fn) === false && // end of array
-    q.isA(list.every(this.arr,this.fn,this.num))), 'list.every returns false unless first argument is an array and the second argument is a function');
+        q.isA(list.every(this.arr,this.fn,this.num))), 'list.every returns false unless first argument is an array and the second argument is a function');
     nA = list.every(localArr,function(v){
         return v + (v / 2);
     },3);//15,30,45,60,75
@@ -89,13 +89,13 @@ test('stripe',function(){
         list.stripe(this.arr,this.fn, this.arr) === false &&
         q.isA(list.stripe(this.arr,this.fn, this.fn))), 'list.stripe returns false unless first argument is an array and the second argument is a function');
     nA = list.stripe(localArr,
-    function(v){
-        return v + (v / 2);
-    },
-    function(v){
-        return v - (v / 2);
-    }
-);//15,10,45,20,75
+        function(v){
+            return v + (v / 2);
+        },
+        function(v){
+            return v - (v / 2);
+        }
+        );//15,10,45,20,75
     ok((nA[0] === 15 &&
         nA[1] === 10 &&
         nA[2] === 45 &&
@@ -112,31 +112,31 @@ test('chunk',function(){
         list.chunk(this.obj, this.fn, this.fn) === false &&
         list.chunk(this.bool, this.fn, this.fn) === false &&
         list.chunk(this.fn, this.fn, this.fn) === false &&//false on bad 1st
-    list.chunk(this.arr, this.str, this.fn) === false &&
+        list.chunk(this.arr, this.str, this.fn) === false &&
         list.chunk(this.arr, this.num, this.fn) === false &&
         list.chunk(this.arr, this.bool, this.fn) === false &&
         list.chunk(this.arr, this.obj, this.fn) === false &&
         list.chunk(this.arr, this.arr, this.fn) === false &&//false on bad 2nd
-    list.chunk(this.arr, this.fn, this.str) === false &&
+        list.chunk(this.arr, this.fn, this.str) === false &&
         list.chunk(this.arr, this.fn, this.fn) === false &&
         list.chunk(this.arr, this.fn, this.bool) === false &&
         list.chunk(this.arr, this.fn, this.obj) === false &&
         list.chunk(this.arr, this.fn, this.arr) === false &&//false on bad 3rd
-    q.isA(list.chunk(localArr,this.fn, 2))), 'list.chunk returns false unless first argument is an array, the second argument is a function and the last argument is an integer');
+        q.isA(list.chunk(localArr,this.fn, 2))), 'list.chunk returns false unless first argument is an array, the second argument is a function and the last argument is an integer');
     ok(list.chunk(this.arr,this.fn, 7) === false, 'list.chunk returns false if number of elements in third argument is not a factor of first.length');
     //output test
     arrayA = list.chunk(localArr,
-    function(arr){
-        return arr[0] + arr[1];
-    },
-    2
-);//[30,70,110]
+        function(arr){
+            return arr[0] + arr[1];
+        },
+        2
+        );//[30,70,110]
     arrayB = list.chunk(localArr,
-    function(arr){
-        return arr[0] + arr[1] + arr[2];
-    },
-    3
-);//[60,150]
+        function(arr){
+            return arr[0] + arr[1] + arr[2];
+        },
+        3
+        );//[60,150]
     ok((arrayA[0] === 30 &&
         arrayA[1] === 70 &&
         arrayA[2] === 110 &&
@@ -194,11 +194,11 @@ test('make', function(){
         list.make(this.obj) === false &&
         list.make(this.arr) === false &&
         list.make(this.num) === false &&
+        list.make(this.fn) === false &&
         q.isA(list.make(5,this.fn))), 'list.build returns false unless: list.build(Number, Function)');
     var testList = list.make(5, function(i, n){
         return 10 * i;
     });
-    console.log(testList);
     ok((q.isA(testList) &&
         testList.length === 5 &&
         q.isN(testList[0]) &&
@@ -206,4 +206,23 @@ test('make', function(){
         q.isN(testList[2]) &&
         q.isN(testList[3]) &&
         q.isN(testList[4])), 'list.build returns an array of length n as expressed by fn');
+});
+
+test('mix', function(){
+    ok(q.isF(list.mix), 'list namespace contains function: mix');
+    ok((list.mix(this.str, this.arr) === false &&
+        list.mix(this.num, this.arr) === false &&
+        list.mix(this.bool, this.arr) === false &&
+        list.mix(this.obj, this.arr) === false &&
+        list.mix(this.fn, this.arr) === false &&
+        list.mix(this.arr, this.str) === false &&
+        list.mix(this.arr, this.num) === false &&
+        list.mix(this.arr, this.obj) === false &&
+        list.mix(this.arr, this.fn) === false &&
+        list.mix([1,2,3],[1,2,3,4]) === false
+        ), 'list.mix returns false unless passed two arrays of equal length');
+    var testList = list.mix([1,2,3],['a','b','c']);
+    ok((testList[0] === 1 && testList[1] === 'a' &&
+        testList[2] === 2 && testList[3] === 'b' &&
+        testList[4] === 3 && testList[5] === 'c'), 'list.mix generates a new array by adding alternate members to a single array');
 });

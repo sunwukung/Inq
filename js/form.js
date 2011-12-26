@@ -27,12 +27,12 @@ var form = ( function(module) {
 
     // CORE FUNCTIONALITY ------------------------------------------------------
     /**
-     * @param Array p
+     * @param Array points
      */
-    function validPath(p){
+    function validPath(points){
         var result = false;
-        if(q.isA(p)){
-            result = list.valid(p,function(i){
+        if(q.isA(points)){
+            result = list.valid(points,function(i){
                 return q.isN(i[0]) && q.isN(i[1]);
             });
         }
@@ -45,9 +45,9 @@ var form = ( function(module) {
      * @param Array c
      * @return Boolean
      */
-    function validCurve(c){
-        return (q.isA(c)) ?
-        list.valid(c, function (i){
+    function validCurve(curve){
+        return (q.isA(curve)) ?
+        list.valid(curve, function (i){
             return (q.isA(i) && i.length === 3) ?
             list.valid(i, function(i){
                 return (q.isA(i) && i.length === 2 && q.isN(i[0]) && q.isN(i[1]));
@@ -63,10 +63,10 @@ var form = ( function(module) {
      * @param Object r rectangle
      * @return Array
      */
-    function rectangleToPoints (r) {
+    function rectangleToPoints (rectangle) {
         var a, b, c, d, e, hW, hY;
-        hW = r.w / 2;
-        hY = r.h / 2;
+        hW = rectangle.width / 2;
+        hY = rectangle.height / 2;
         a = [-hW, -hY];
         b = [hW, -hY];
         c = [hW, hY];
@@ -76,9 +76,10 @@ var form = ( function(module) {
     }
 
     /**
-     * create a quadratic curve representing a circle
-     *
+     * generate an array of points representing a circle rendered as a bezier curve
+     * 
      * @param Number r radius
+     * @return Array | Boolean
      */
     function circleToPoints(r) {
         var a, b, c, d, x = 0, y = 0,
@@ -96,18 +97,20 @@ var form = ( function(module) {
     }
 
     /**
+     * generate an Array of xy pairs representing a polygon
      *
-     *@param Number n number of points
-     *@param radius radius of polygon
+     * @param Number nPoints number of points
+     * @param Number radius radius of polygon
+     * @return Array points
      */
-    function polygonToPoints(n, r){
-        var inc = 360 / n, points = [];
-        points = list.make(n, function(i, n){
-            var j =  i === 0 ? -90 : -90 + (inc * i),//rotate poly through -90
-            d = calc.degreesToRadians(j),
+    function polygonToPoints(nPoints, radius){
+        var inc = 360 / nPoints, points = [];
+        points = list.make(nPoints, function(i, n){
+            var j =  i === 0 ? -90 : -90 + (inc * i),//rotate poly through -90 for cognitive convenience...
+            radians = calc.degreesToRadians(j),
             p2c = calc.polarToCartesian({
-                r:r,
-                t:d
+                r:radius,
+                t:radians
             });
             return [p2c.x, p2c.y];
         });
@@ -116,11 +119,12 @@ var form = ( function(module) {
     }
 
     /**
-     * path drawing functions
+     * path drawing method
      *
      * @param CanvasRenderingContext2D canvas object
-     * @param array position
-     * @param array points
+     * @param Array position
+     * @param Array points
+     * @return Boolean
      */
     function drawPath(canvas, points, position) {
         var result = false;
@@ -145,11 +149,13 @@ var form = ( function(module) {
     }
 
     /**
-     * curve drawing functions
+     * curve drawing method
      *
      * @param CanvasRenderingContext2D canvas object
-     * @param array position
-     * @param array points
+     * @param Array points
+     * @param Array start
+     * @param Array position
+     * @return Boolean
      */
     function drawBezCurve(canvas, points, start, position){
         var result = false;
@@ -157,7 +163,6 @@ var form = ( function(module) {
             position = q.isA(position) ? position : [0,0];
             points = calc.move(points, position);
             start = calc.move(start, position);
-            console.log(points);
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
             list.map(points,function(p){
@@ -171,6 +176,12 @@ var form = ( function(module) {
         return result;
     }
 
+    /**
+     * translate points according to list of transforms
+     *
+     * @param Array points
+     * @param Array transforms
+     */
     function processTransforms(points, transforms){
         if((q.isA(points) && points.length > 0) && (q.isA(transforms) && transforms.length > 0)){
             //get the next transformation
@@ -191,35 +202,39 @@ var form = ( function(module) {
     form = function(){
         this.transforms = [];
     };
-    
-    form.prototype.rotate = function(d){
+
+    /**
+     * add a rotation modifier to the transformation stack
+     *
+     * @param Number degrees
+     * @return Boolean
+     */
+    form.prototype.rotate = function(degrees){
         var result = false;
-        if(q.isN(d)){
+        if(q.isN(degrees)){
             this.transforms.push({
                 type:'rotate',
-                value:d
+                value:degrees
             });
             result = true;
         }
         return result;
     };
-    
-    form.prototype.scale = function(w,h){
+
+    /**
+     * add a scale modifier to the transformation stack
+     *
+     * @param Number width
+     * @param Number height
+     * @return Boolean
+     */
+    form.prototype.scale = function(width, height){
         var result = false;
-        if(q.isN(w) && q.isN(h)){
+        if(q.isN(width) && q.isN(height)){
             this.transforms.push({
                 type:'scale',
-                value:[w,h]
+                value:[width, height]
             });
-            result = true;
-        }
-        return result;
-    };
-    
-    form.prototype.origin = function(x,y){
-        var result = false;
-        if(q.isN(x) && q.isN(y) ){
-            this.origin = [x,y];
             result = true;
         }
         return result;
@@ -233,11 +248,10 @@ var form = ( function(module) {
      * @arg Number width
      * @arg Number height
      */
-    rectangle = function(w,h){
+    rectangle = function(width, height){
         form.apply(this,arguments);
-        this.w = w;
-        this.h = h;
-        this.transforms = [];
+        this.width = width;
+        this.height = height;
     };
 
     
@@ -264,16 +278,16 @@ var form = ( function(module) {
     /*
      * returns a rectangle object
      *
-     * @arg Number w width
-     * @arg Number h height
+     * @arg Number width
+     * @arg Number height
      * @return Object | Boolean
      */
-    function rec(w,h){
-        var result = false;
-        if(!q.isU(w) && q.isN(w) && !q.isU(h) && q.isN(h)){
-            result = new rectangle(w,h);
+    function rec(width, height){
+        var o = false;
+        if(!q.isU(width) && q.isN(width) && !q.isU(height) && q.isN(height)){
+            o = new rectangle(width, height);
         }        
-        return result;
+        return o;
     }
     // CIRCLE-------------------------------------------------------------------
     /*
@@ -298,6 +312,7 @@ var form = ( function(module) {
     /*
      * @param CanvasRenderingContext2D canvas object
      * @param Array position
+     * @return Object | Boolean
      */
     circle.prototype.draw = function(canvas, position){
         var result = false,
@@ -322,11 +337,11 @@ var form = ( function(module) {
      * @return Object | Boolean
      */
     function crc(radius){
-        var result = false;
+        var o = false;
         if(q.isN(radius)){
-            result = new circle(radius);
+            o = new circle(radius);
         }
-        return result;
+        return o;
     }
     // PATH --------------------------------------------------------------------
     /*
@@ -335,9 +350,9 @@ var form = ( function(module) {
      *
      * @arg Number radius
      */
-    path = function(p){
+    path = function(points){
         form.apply(this,arguments);
-        this.points = p;
+        this.points = points;
     };
 
     // apply parent prototype before augmenting the child object
@@ -362,15 +377,15 @@ var form = ( function(module) {
      * @return Object | Boolean
      */
     function pth(points, v){
-        var result = false;
+        var o = false;
         if(q.isA(points)){
-            result = v ?
+            o = v ?
             (validPath(points)) ?
             new path(points) :
             false :
             new path(points) ;
         }
-        return result;
+        return o;
     }
     
     // CURVE--------------------------------------------------------------------
@@ -407,23 +422,23 @@ var form = ( function(module) {
     /*
      * returns a curve object
      *
-     * @arg Array p points
-     * @arg Array s start
-     * @arg Boolean v
+     * @arg Array points
+     * @arg Array start
+     * @arg Boolean validate
      * @return Object | Boolean
      */
-    function crv(p,s,v){
-        var result = false;
-        if(q.isA(p)){
-            if(s !== undefined && q.isA(s) && s.length === 2 && q.isN(s[0]) && q.isN(s[1])){
-                result = v ?
-                (validCurve(p)) ?
-                new curve(p, s) :
+    function crv(points, start, validate){
+        var o = false;
+        if(q.isA(points)){
+            if(start !== undefined && q.isA(start) && start.length === 2 && q.isN(start[0]) && q.isN(start[1])){
+                o = validate ?
+                (validCurve(points)) ?
+                new curve(points, start) :
                 false :
-                new curve(p, s) ;
+                new curve(points, start) ;
             }
         }
-        return result;
+        return o;
     }
     // POLY --------------------------------------------------------------------
 
@@ -431,12 +446,12 @@ var form = ( function(module) {
      * constructor method for polygons
      * private implementation of form.poly
      *
-     * @arg Number n
+     * @arg Number nPoints
      * @arg Number radius
      */
-    polygon = function(n, radius){
+    polygon = function(nPoints, radius){
         form.apply(this,arguments);
-        this.n = n;
+        this.nPoints = nPoints;
         this.radius = radius;
     };
 
@@ -448,7 +463,7 @@ var form = ( function(module) {
         points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
-            points = polygonToPoints(this.n, this.radius);
+            points = polygonToPoints(this.nPoints, this.radius);
             points = processTransforms(points,this.transforms);
             drawPath(canvas, points, position);
             result = true;
@@ -457,30 +472,34 @@ var form = ( function(module) {
     }
 
     /*
-     * returns a path object
+     * returns a poly object
      *
-     * @arg Array p points
+     * @arg Number nPoints
+     * @arg Number radius
      * @return Object | Boolean
      */
-    function poly(p, r){
-        var c = false;
-        if(q.isN(p) && q.isN(r)){
-            c = new polygon(p, r);
+    function poly(nPoints, radius){
+        var o = false;
+        if(q.isN(nPoints) && q.isN(radius)){
+            o = new polygon(nPoints, radius);
         }
-        return c;
+        return o;
     }
     // STAR --------------------------------------------------------------------
     /*
-     * returns a path object
+     * constructor method for stars
+     * private implementation of form.star
      *
-     * @arg Object p points
+     * @param Number nPoints
+     * @param Number radius1
+     * @param Number radius2
      * @return Object | Boolean
      */
-    function stella(n, r1, r2){
+    function stella(nPoints, radius1, radius2){
         form.apply(this,arguments);
-        this.n = n;
-        this.radius1 = r1;
-        this.radius2 = r2;
+        this.nPoints = nPoints;
+        this.radius1 = radius1;
+        this.radius2 = radius2;
     }
 
     // apply parent prototype before augmenting the child object
@@ -491,9 +510,9 @@ var form = ( function(module) {
         points;
         if(canvas.toString() === '[object CanvasRenderingContext2D]'){
             //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
-            pointsA = polygonToPoints(this.n, this.radius1);
-            pointsB = polygonToPoints(this.n, this.radius2);
-            pointsB = calc.rotate(pointsB, (360 / this.n) / 2 );
+            pointsA = polygonToPoints(this.nPoints, this.radius1);
+            pointsB = polygonToPoints(this.nPoints, this.radius2);
+            pointsB = calc.rotate(pointsB, (360 / this.nPoints) / 2 );
             points = list.mix(pointsA, pointsB);
             points = processTransforms(points,this.transforms);
             drawPath(canvas, points, position);
@@ -507,12 +526,12 @@ var form = ( function(module) {
      * @param Number r1
      * @param Number r2
      */
-    function star(n, r1, r2){
-        var s = false;
-        if(q.isN(n) && (n >= 3) && q.isN(r1) && q.isN(r2)){
-            s = new stella(n, r1, r2);
+    function star(nPoints, radius1, radius2){
+        var o = false;
+        if(q.isN(nPoints) && (nPoints >= 3) && q.isN(radius1) && q.isN(radius2)){
+            o = new stella(nPoints, radius1, radius2);
         }
-        return s;
+        return o;
     }
 
     // WAVE --------------------------------------------------------------------
@@ -523,11 +542,11 @@ var form = ( function(module) {
      * @return Object | Boolean
      */
     function wave(p){
-        var c = false;
+        var o = false;
         if(q.isA(p)){
-            c = {};
+            o = {};
         }
-        return c;
+        return o;
     }
 
     //-----------------------------------------------------------------------------------

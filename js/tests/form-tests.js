@@ -1,14 +1,6 @@
 module('form',{
     setup : function(){
         this.canvas = document.createElement('canvas').getContext('2d');
-        this.rectangles = {
-            a : form.rec(10,10),
-            b : form.rec(20,20)            
-        };
-        this.circles = {
-            a : form.crc(10),
-            b : form.rec(20)
-        };
         this.str = 'foo';
         this.num = 123;
         this.arr = [1,2,3];
@@ -19,41 +11,31 @@ module('form',{
         this.fn = function(){
             return 'foo';
         };
-        this.types = ['rec','crc','pth','crv','poly','star'];
     },
     teardown : function(){
         this.canvas = document.createElement('canvas').getContext('2d');
-        this.rectangles = {
-            a : form.rec(10,10),
-            b : form.rec(20,20)            
-        };
     }
-});
-
-// BASICS??? -------------------------------------------------------------------
-test('exists', function() {
-    ok(q.isO(form), 'the form namespace exists');
 });
 
 // REC -------------------------------------------------------------------------
 
 test('rec',function(){
-    var r = this.rectangles;
     ok(q.isF(form.rec),'form.rec is a function');
     ok((form.rec(this.str) === false &&
         form.rec(this.arr) === false &&
         form.rec(this.obj) === false &&
         form.rec(this.bool) === false &&
         form.rec(this.fn) === false), 'form.rec returns false on bad arguments');
-    ok(q.isO(form.rec(10,10)), 'form.rec returns Object when provided with appropriate arguments');
-    ok((!q.isU(r.a.w) && q.isN(r.a.w)), 'objects produced by form.rec have a Number property : w');
-    ok((!q.isU(r.a.h) && q.isN(r.a.h)), 'objects produced by form.rec have a Number property : h');
+    var testRec = (form.rec(10, 10));
+    ok(q.isO(testRec), 'form.rec returns Object when provided with appropriate arguments');
+    ok((q.objHas(testRec,'width') && q.isN(testRec.width)), 'objects produced by form.rec have a Number property : "width"');
+    ok((q.objHas(testRec,'height') && q.isN(testRec.height)), 'objects produced by form.rec have a Number property : "height"');
+    ok(q.isF(testRec.rotate) && q.isF(testRec.scale) && q.isF(testRec.draw), 'rectangle objects have following methods: "rotate", "scale" and "draw"');
 });
 
 // CIRCLE ----------------------------------------------------------------------
 
 test('crc',function(){
-    var c = this.circles;   
     ok(q.isF(form.crc),'form.crc is a function');
     ok((form.crc(this.str) === false &&
         form.crc(this.arr) === false &&
@@ -61,14 +43,36 @@ test('crc',function(){
         form.crc(this.bool) === false &&
         form.crc(this.fn) === false),
     'form.crc returns false if not provided a numeric argument');
-    ok(q.isO(form.crc(10)),'form.crc returns a circle object if provided with a numeric argument');
-    
+    var testCircle = form.crc(10);
+    ok(q.objHas(testCircle,'radius') && q.isN(testCircle.radius), 'circle objects have a Number property : "radius"');
+    ok(q.isO(testCircle),'form.crc returns a circle object if provided with a numeric argument');
+    ok(q.isF(testCircle.rotate) && q.isF(testCircle.scale) && q.isF(testCircle.draw), 'circle objects have following methods: "rotate", "scale" and "draw"');
+});
+
+// PATH ------------------------------------------------------------------------
+
+test('pth',function(){
+    var testPath,
+    goodPoints = [[10,10],[30,10],[20,10],[10,20]],
+    badPoints = [[10,10],[30,10],[20,10],['10',20]];
+    ok(q.isF(form.pth),'form.pth is a function');
+    ok((form.pth(this.str) === false &&
+        form.pth(this.num) === false &&
+        form.pth(this.obj) === false &&
+        form.pth(this.bool) === false &&
+        form.pth(this.fn) === false &&
+        q.isO(form.pth(badPoints,true)) === false),
+    'form.pth returns false on bad arguments');
+    testPath = form.pth(goodPoints,[10,10]);
+    ok(q.objHas(testPath,'points') && q.isA(testPath.points), 'path objects have an Array property : "points"');
+    ok(q.isO(testPath),'form.pth returns a curve object if provided with a list of arrays containing three pairs of xy co-ordinates, followed by a single xy pair array');
+    ok(q.isF(testPath.rotate) && q.isF(testPath.scale) && q.isF(testPath.draw), 'path objects have following methods: "rotate", "scale" and "draw"');
 });
 
 // CRV -------------------------------------------------------------------------
 
 test('crv',function(){
-    var testCrv,
+    var testCurve,
     goodPoints = [
     [[10,10],[30,10],[20,10]],
     [[10,20],[30,20],[20,20]],
@@ -91,27 +95,11 @@ test('crv',function(){
         q.isO(form.crv(badPoints,[0,0],true)) === false && //trigger strict validation of curve
         q.isO(form.crv(goodPoints,[0,'0'])) === false),
     'form.crv returns false on bad arguments');
-    ok(q.isO(form.crv(goodPoints,[10,10])),'form.crv returns a curve object if provided with a list of arrays containing three pairs of xy co-ordinates, followed by a single xy pair array');
-
-});
-
-// PATH ------------------------------------------------------------------------
-
-test('pth',function(){
-    var testPth,
-    goodPoints = [[10,10],[30,10],[20,10],[10,20]],
-    badPoints = [[10,10],[30,10],[20,10],['10',20]];
-    ok(q.isF(form.pth),'form.pth is a function');
-    ok((form.pth(this.str) === false &&
-        form.pth(this.num) === false &&
-        form.pth(this.obj) === false &&
-        form.pth(this.bool) === false &&
-        form.pth(this.fn) === false &&
-        q.isO(form.pth(badPoints,true)) === false),
-    'form.pth returns false on bad arguments');
-
-    ok(q.isO(form.pth(goodPoints,[10,10])),'form.pth returns a curve object if provided with a list of arrays containing three pairs of xy co-ordinates, followed by a single xy pair array');
-
+    testCurve = form.crv(goodPoints,[10,10]);
+    ok(q.objHas(testCurve,'points') && q.isA(testCurve.points), 'curve objects have an Array property : "points"');
+    ok(q.objHas(testCurve,'start') && q.isA(testCurve.start), 'curve objects have an Array property : "start"');
+    ok(q.isO(testCurve),'form.crv returns a curve object if provided with a list of arrays containing three pairs of xy co-ordinates, followed by a single xy pair array');
+    ok(q.isF(testCurve.rotate) && q.isF(testCurve.scale) && q.isF(testCurve.draw), 'curve objects have following methods: "rotate", "scale" and "draw"');
 });
 
 // POLY ------------------------------------------------------------------------
@@ -124,7 +112,11 @@ test('poly',function(){
         form.poly(this.fn) === false &&
         form.poly(this.arr) === false),
     'form.poly returns false on bad arguments');
-    ok(form.poly(5,10),'form.poly returns an object of type "poly" when passed numeric points and radius values');
+    var testPoly = form.poly(5,10);
+    ok(q.isO(testPoly),'form.poly returns an object "poly" when passed (Number:points, Number:radius)');
+    ok(q.objHas(testPoly,'nPoints') && q.isN(testPoly.nPoints), 'poly objects have a Number property : "nPoints"');
+    ok(q.objHas(testPoly,'radius') && q.isN(testPoly.radius), 'poly objects have a Number property : "radius"');
+    ok(q.isF(testPoly.rotate) && q.isF(testPoly.scale) && q.isF(testPoly.draw), 'poly objects have following methods: "rotate", "scale" and "draw"');
 });
 
 // STAR ------------------------------------------------------------------------
@@ -146,23 +138,27 @@ test('star', function(){
         form.star(this.num, this.num, this.bool) === false &&
         form.star(this.num, this.num, this.fn) === false &&
         form.star(this.num, this.num, this.arr) === false &&
-        form.star(2, this.num, this.num) === false
+        form.star(2, this.num, this.num) === false //minimum of 3 points in a star
         ),
     'form.star returns false on bad arguments');
-    ok(q.isO(form.star(3,2,5)),'form.star returns an object of type "star" when passed three Number arguments');
+    var testStar = form.star(3,2,5);
+    ok(q.isO(testStar),'form.star returns an object of type "star" when passed (Number:points, Number:radius1, Number:radius2)');
+    ok(q.objHas(testStar,'nPoints') && q.isN(testStar.nPoints), 'star objects have a Number property : "nPoints"');
+    ok(q.objHas(testStar,'radius1') && q.isN(testStar.radius1), 'star objects have a Number property : "radius1"');
+    ok(q.objHas(testStar,'radius2') && q.isN(testStar.radius2), 'star objects have a Number property : "radius2"');
+    ok(q.isF(testStar.rotate) && q.isF(testStar.scale) && q.isF(testStar.draw), 'star objects have following methods: "rotate", "scale" and "draw"');
 });
 
+// INSTANCES ------------------------------------------------------------------
+test('instances', function(){
 
-// TRANSFORMS ------------------------------------------------------------------
+    });
 
-test('transforms', function(){
-    var i = 0, n = this.types.length;
 
-    while(i < n){
+// METHODS ------------------------------------------------------------------
+test('methods', function(){
 
-        i = i+1;
-    }
-});
+    });
 
 /*
  * REINSTATE FOR ALL FORMS - use an array

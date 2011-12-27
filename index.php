@@ -15,8 +15,10 @@ include 'partials/header.php';
         poly=form.poly(5,100),
         star = form.star(6,100,55),
         ctx = document.getElementById('ezl').getContext('2d');
-        ctx.fillStyle = 'rgba(0,0,0,0)';
+//        ctx.fillStyle = 'rgba(0,0,0,0)';
+        sqr.draw(ctx,[200,200]);
 
+        /*
         star.scale(1.5,1);
         star.rotate(30);
         sqr.scale(1,2);
@@ -36,7 +38,6 @@ include 'partials/header.php';
         sqr.draw(ctx,[200,200]);
         pth.draw(ctx,[200,200]);
         poly.draw(ctx,[600,200]);
-        /*
         function animated() {
             if(n < 360) {
                 ctx.clearRect(0, 0, 960, 400);

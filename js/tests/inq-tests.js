@@ -1,11 +1,25 @@
-test('library components', function() {
-    ok(typeof inq === 'object', 'the inq namespace exists');
+module('inq',{
+    setup : function(){
+        this.canvas = document.createElement('canvas').getContext('2d');
+        this.str = 'foo';
+        this.num = 123;
+        this.arr = [1,2,3];
+        this.boo = true;
+        this.obj = {
+            foo:'bar'
+        };
+        this.fn = function(){
+            return 'foo';
+        };
+    },
+    teardown : function(){
+        this.canvas = document.createElement('canvas').getContext('2d');
+    }
 });
 
-test('inq',function(){
-    ok(typeof inq.rotate === 'function','inq.rotate is a function');
-    ok(typeof inq.scale === 'function','inq.scale is a function');
-    ok(typeof inq.move === 'function','inq.move is a function');
+test('methods',function(){
+    //color
+    ok(q.isF(inq.ink),'namespace:inq has method:ink');
 });
 
 

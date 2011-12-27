@@ -128,12 +128,17 @@ var form = ( function(module) {
      */
     function drawPath(canvas, points, position) {
         var result = false;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]') {
 
-            //apply position
-            position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-
+        if(String(canvas) === '[object CanvasRenderingContext2D]'){
+            result = true;
+            //apply optional position params
+            if(position !== undefined){
+                if(q.isA(position) && position.length === 2 && q.isN(position[0]) && q.isN(position[1])){
+                    points = calc.move(points, position);
+                } else {
+                    result = false;
+                }
+            }
             //draw path
             canvas.beginPath();
             canvas.moveTo(points[0],points[1]);
@@ -143,7 +148,6 @@ var form = ( function(module) {
             canvas.fill();
             canvas.stroke();
             canvas.closePath();
-            result = true;
         }
         return result;
     }
@@ -159,10 +163,18 @@ var form = ( function(module) {
      */
     function drawBezCurve(canvas, points, start, position){
         var result = false;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]') {
+        if(String(canvas) === '[object CanvasRenderingContext2D]'){
             position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-            start = calc.move(start, position);
+            result = true;
+            //apply optional position params
+            if(position !== undefined){
+                if(q.isA(position) && position.length === 2 && q.isN(position[0]) && q.isN(position[1])){
+                    points = calc.move(points, position);
+                    start = calc.move(start, position);
+                } else {
+                    result = false;
+                }
+            }
             canvas.beginPath();
             canvas.moveTo(start[0],start[1]);
             list.map(points,function(p){
@@ -171,7 +183,6 @@ var form = ( function(module) {
             canvas.fill();
             canvas.stroke();
             canvas.closePath();
-            result = true;
         }
         return result;
     }
@@ -265,13 +276,10 @@ var form = ( function(module) {
     rectangle.prototype.draw = function(canvas, position){
         var result = false, 
         points;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //create a point matrix if one isn't already defined
-            points = rectangleToPoints(this);
-            points = processTransforms(points,this.transforms);
-            drawPath(canvas, points, position);
-            result = true;
-        }
+        //create a point matrix if one isn't already defined
+        points = rectangleToPoints(this);
+        points = processTransforms(points,this.transforms);
+        result = drawPath(canvas, points, position);
         return result;
     };
     
@@ -318,15 +326,10 @@ var form = ( function(module) {
         var result = false,
         points,
         start;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //create a point matrix if one isn't already defined
-            points = processTransforms(circleToPoints(this.radius),this.transforms);
-            position = q.isA(position) ? position : [0,0];
-            points = calc.move(points, position);
-            start =  [points[3][2][0],points[3][2][1]];
-            drawBezCurve(canvas, points, start, position);
-            result = true;
-        }
+        //create a point matrix if one isn't already defined
+        points = processTransforms(circleToPoints(this.radius),this.transforms);
+        start =  [points[3][2][0],points[3][2][1]];
+        result = drawBezCurve(canvas, points, start, position);
         return result;
     };
 
@@ -361,12 +364,9 @@ var form = ( function(module) {
     path.prototype.draw = function(canvas, position){
         var result = false,
         points;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //create a point matrix if one isn't already defined
-            points = processTransforms(this.points,this.transforms);
-            drawPath(canvas, points, position);
-            result = true;
-        }
+        //create a point matrix if one isn't already defined
+        points = processTransforms(this.points,this.transforms);
+        result = drawPath(canvas, points, position);
         return result;
     };
 
@@ -409,13 +409,10 @@ var form = ( function(module) {
         var result = false,
         points,
         start;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //create a point matrix if one isn't already defined
-            points = processTransforms(this.points,this.transforms);
-            position = q.isA(position) ? position : [0,0];
-            drawBezCurve(canvas, points, this.start, position);
-            result = true;
-        }
+        //create a point matrix if one isn't already defined
+        points = processTransforms(this.points,this.transforms);
+        position = q.isA(position) ? position : [0,0];
+        result = drawBezCurve(canvas, points, this.start, position);
         return result;
     };
 
@@ -461,13 +458,10 @@ var form = ( function(module) {
     polygon.prototype.draw = function(canvas, position){
         var result = false,
         points;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
-            points = polygonToPoints(this.nPoints, this.radius);
-            points = processTransforms(points,this.transforms);
-            drawPath(canvas, points, position);
-            result = true;
-        }
+        //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
+        points = polygonToPoints(this.nPoints, this.radius);
+        points = processTransforms(points,this.transforms);
+        result = drawPath(canvas, points, position);
         return result;
     }
 
@@ -508,16 +502,13 @@ var form = ( function(module) {
     stella.prototype.draw = function(canvas, position){
         var result = false,
         points;
-        if(canvas.toString() === '[object CanvasRenderingContext2D]'){
-            //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
-            pointsA = polygonToPoints(this.nPoints, this.radius1);
-            pointsB = polygonToPoints(this.nPoints, this.radius2);
-            pointsB = calc.rotate(pointsB, (360 / this.nPoints) / 2 );
-            points = list.mix(pointsA, pointsB);
-            points = processTransforms(points,this.transforms);
-            drawPath(canvas, points, position);
-            result = true;
-        }
+        //adjust polar co-ordinate resolution, rotate anticlockwise thru 90
+        pointsA = polygonToPoints(this.nPoints, this.radius1);
+        pointsB = polygonToPoints(this.nPoints, this.radius2);
+        pointsB = calc.rotate(pointsB, (360 / this.nPoints) / 2 );
+        points = list.mix(pointsA, pointsB);
+        points = processTransforms(points,this.transforms);
+        result = drawPath(canvas, points, position);
         return result;
     };
 

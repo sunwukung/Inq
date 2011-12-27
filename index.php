@@ -30,7 +30,6 @@ include 'partials/header.php';
         crv.scale(0.5, 0.5);
         crv.rotate(90);
 
-        
         crv.draw(ctx,[300,300]);
         star.draw(ctx,[200,200]);
         crc.draw(ctx,[200,200]);

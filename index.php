@@ -6,7 +6,7 @@ include 'partials/header.php';
 <script>
 
     (function(){
-        var sqr = form.rec(50,50),
+        var sqr = form.rec(250,250),
         crc = form.crc(100),
         pth = form.pth([[200,200],[300,100],[400,200],[500,100]]),
         crv = form.crv([
@@ -14,9 +14,10 @@ include 'partials/header.php';
         ],[100,100]),
         poly=form.poly(5,100),
         star = form.star(6,100,55),
-        ctx = document.getElementById('ezl').getContext('2d');
+        ctx = document.getElementById('ezl').getContext('2d'),
+        ink = color.style([255,0,0],1,0);
 //        ctx.fillStyle = 'rgba(0,0,0,0)';
-        sqr.draw(ctx,[200,200]);
+        sqr.draw(ctx,[200,200], ink);
 
         /*
         star.scale(1.5,1);

@@ -1,5 +1,5 @@
 <?php
-$types = array('form','calc','inq','k', 'list');
+$types = array('form','calc','shade','k', 'list');
 $type = (isset($_GET['type']) && in_array($_GET['type'],$types))?$_GET['type']:'inq';
 
 $css = '<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />';

@@ -12,7 +12,7 @@
         <script type="text/javascript" src="/js/calc.js"></script>
         <script type="text/javascript" src="/js/form.js"></script>
         <script type="text/javascript" src="/js/list.js"></script>
-        <script type="text/javascript" src="/js/inq.js"></script>
+        <script type="text/javascript" src="/js/shade.js"></script>
         <?php echo $css; ?>
         <?php echo $js; ?>
     </head>
@@ -37,7 +37,7 @@
                                 <a href="/tests.php?type=list">List Tests</a>
                             </li>
                             <li>
-                                <a href="/tests.php?type=inq">Inq Tests</a>
+                                <a href="/tests.php?type=shade">Shade Tests</a>
                             </li>
                             <li>
                                 <a href="/tests.php?type=calc">Calc Tests</a>

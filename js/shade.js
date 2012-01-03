@@ -30,14 +30,23 @@ var shade = ( function(module) {
      * @param array | object | string fill
      * @param array | object | number line
      */
-    _style = function(color, line, fill) {
-        this.strokeStyle = 'rgba(0,0,0,100)';
-        this.fillStyle = 'rgba(0,0,0,0)';
-        this.lineWidth = 1;
+    _style = function(color, line, px, fill) {
+        var fillCol =  color.join(','),
+        lineCol;
+        this.fillStyle = (color.length === 3) ?'rgb(' + fillCol +  ')':'rgba(' + fillCol +  ')';
+
+        if(line !== undefined){
+            lineCol = color.join(',');
+            this.strokeStyle = (line.length === 3) ?'rgb(' + fillCol +  ')':'rgba(' + fillCol +  ')';
+        }
+
+        this.lineWidth = px !== undefined ? px : 1;
+        this.fill = fill !== undefined ? false : true;
+
+        
         this.lineCap = 'square';
         this.lineJoin = 'round';
         this.miterLimit = 10;
-        this.fill = false;
         this.stroke = false;
         this.close = true;
     //        if(line) {
@@ -55,9 +64,10 @@ var shade = ( function(module) {
      * @param Array color
      */
     function validColor(color){
-        var result = false;
+        var result = false, n;
         if(q.isA(color)){
-            if(color.length === 3 &&
+            n = color.length;
+            if((n === 3 || n === 4) &&
                 list.valid(color, function(i){
                     return q.isN(i) && i<=255 && i>=0;
                 })){
@@ -66,7 +76,7 @@ var shade = ( function(module) {
         }
         return result;
     }
-    
+
     /**
          * return an ink object
          *
@@ -74,15 +84,14 @@ var shade = ( function(module) {
          * @param Number line
          * @param Boolean fill
          */
-    module.style = function(color, line, fill) {
+    module.style = function(color, line, px, fill) {
         //validate args
         var result = false, valid;
         if(validColor(color)){
-            valid = line === undefined ? true : q.isN(line);
-            if(valid && fill !== undefined){
-                valid = (q.isB(fill));
-            }
-            result = valid ? new _style(color, line, fill) : valid;
+            valid = (line === undefined) ? true : validColor(line);
+            valid = (valid && px === undefined) ? true : q.isN(px);
+            valid = (valid && fill === undefined) ? true : valid;
+            result = valid ? new _style(color, line, px, fill) : valid;
         }
         return result;
     };

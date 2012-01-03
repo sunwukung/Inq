@@ -15,8 +15,8 @@ include 'partials/header.php';
         poly=form.poly(5,100),
         star = form.star(6,100,55),
         ctx = document.getElementById('ezl').getContext('2d'),
-        ink = color.style([255,0,0],1,0);
-//        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ink = shade.style([255,0,0,100]);
+        console.log(ink);
         sqr.draw(ctx,[200,200], ink);
 
         /*
